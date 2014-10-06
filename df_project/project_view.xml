@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+	 <!-- new Task 
+	 	<act_window name="Tambahkan Realisasi Bulanan"
+            res_model="project.task.create" 
+            src_model="project.task"
+            multi="True"
+            view_mode="form"
+            view_type="form"
+            target="new"
+            id="action_create_task"/>		
+-->
+		 <record id="skp_company" model="ir.ui.view">
+            <field name="name">res.company.task.config</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='account_grp']" position="after">
+                    <group name="project_grp" string="Staff Pemeriksa BKD">
+                        <field name="head_of_comp_employee_id" />
+						<field name="user_id_bkd" />
+                    </group>
+                </xpath>
+            </field>
+        </record>
+	 <!-- Top menu item -->
+        <menuitem name="Penilaian Prestasi Kerja"
+            id="base.menu_main_pm" 
+            groups="project.group_project_manager,project.group_project_user"
+            sequence="0"/>
+        
+      <!-- Top menu item -->
+        <menuitem name="Messaging" 
+          id="mail.mail_feeds_main"
+          groups="df_project.group_project_evaluated_bkd,project.group_project_manager"  
+          sequence="100"/>
+	<menuitem id="project.menu_project_management" name="Sasaran Kerja Pegawai" parent="base.menu_main_pm" sequence="1"/>
+	<menuitem id="menu_realisasi_perilaku" name="Perilaku Dan Tugas Tambahan" parent="base.menu_main_pm" sequence="2"/>
+	<menuitem id="menu_main_pm_all" name="Sasaran Kerja Unit" parent="base.menu_main_pm" sequence="3"/>
+	<!--<menuitem name="Buat Realisasi Bulanan" id="menu_action_create_task" parent="menu_main_pm_all" action="action_create_task"/>-->
+	
+	<!-- Target Kerja / Project -->
+	<record id="edit_pns_target" model="ir.ui.view">
+            <field name="name">project.project.form</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/header/field[@name='state']" position="attributes">
+                     <attribute name="statusbar_visible">close</attribute>  
+                </xpath>
+                <xpath expr="/form/header/button[@name='set_open']" position="attributes">
+                     <attribute name="invisible">True</attribute>  
+                </xpath>
+                <xpath expr="/form/header/button[@name='set_open']" position="before">
+                 <button name="set_new"  string="Target Bulanan Siap Dibuat" type="object"  attrs="{'invisible':[('state','not in', ('draft','open'))]}"  groups="project.group_project_user"/>
+                 <button name="set_propose"  string="Ajukan Target" type="object"  attrs="{'invisible':[('state','not in', ('new','rejected_manager','correction'))]}" confirm="Apakah Anda Yakin Sudah Mengisi Data Dengan Benar?"   groups="project.group_project_user"/>
+                 <button name="cancel_target"  string="Target Dibatalkan" type="object"  confirm="Apakah Anda Yakin Akan Melakukan Pembatalan Pada Transaksi Ini?" attrs="{'invisible':[('state','not in', ('new','rejected_manager','open','pending'))]}"  groups="project.group_project_user"/>
+                 <button name="set_evaluated"  string="Ajukan Ke BKD" type="object"  attrs="{'invisible':[('state','not in', ('propose','rejected_bkd'))]}"  groups="project.group_project_manager"/>
+                 <button name="set_propose_rejected"  string="Tolak" type="object"  attrs="{'invisible':[('state','!=', 'propose')]}"  groups="project.group_project_manager"/>
+                 <button name="set_confirm"  string="Terima" type="object"  attrs="{'invisible':[('state','!=', 'evaluated')]}"  groups="df_project.group_project_evaluated_bkd"/>
+                 <button name="set_evaluate_rejected"  string="Tolak" type="object"  attrs="{'invisible':[('state','!=', 'evaluated')]}"  groups="df_project.group_project_evaluated_bkd"/>
+                 
+				<button name="set_propose_correction"  confirm="Apakah Anda Yakin Akan Melakukan Revisi Target Tahunan? "  string="Ajukan Revisi Target" type="object"  attrs="{'invisible':[('state','!=', 'confirm')]}"  groups="project.group_project_user"/>
+				<button name="set_correction_approve"  confirm="Apakah Anda Yakin Akan Menerima Pengajuan Ini?"  string="Terima Revisi" type="object"  attrs="{'invisible':[('state','!=', 'propose_correction')]}"  groups="df_project.group_project_evaluated_bkd"/>
+				<button name="set_correction_reject"   confirm="Apakah Anda Yakin Akan Menolak Pengajuan Ini?"  string="Tolak Revisi" type="object"  attrs="{'invisible':[('state','!=', 'propose_correction')]}"  groups="df_project.group_project_evaluated_bkd"/>
+				
+				<button name="set_propose_closing"  confirm="Apakah Anda Yakin Tidak Melanjutkan Target Tahunan? "  string="Ajukan Closing Target" type="object"  attrs="{'invisible':[('state','!=', 'confirm')]}"  groups="project.group_project_user"/>
+				<button name="set_closing_approve"  confirm="Apakah Anda Yakin Akan Menerima Pengajuan Ini?"  string="Terima Closing Target" type="object"  attrs="{'invisible':[('state','!=', 'propose_to_close')]}"  groups="df_project.group_project_evaluated_bkd"/>
+				<button name="set_closing_reject"   confirm="Apakah Anda Yakin Akan Menolak Pengajuan Ini?"  string="Tolak Closing Target" type="object"  attrs="{'invisible':[('state','!=', 'propose_to_close')]}"  groups="df_project.group_project_evaluated_bkd"/>
+				
+                </xpath>
+                <xpath expr="/form/header/button[@name='set_done']" position="attributes">
+                	 <attribute name="invisible">True</attribute>        
+                </xpath>
+                <xpath expr="/form/header/button[@name='set_pending']" position="attributes">
+                	 <attribute name="invisible">True</attribute>        
+                </xpath>
+                <xpath expr="/form/header/button[@name='set_template']" position="attributes">
+                	 <attribute name="invisible">True</attribute>        
+                </xpath>
+                <xpath expr="/form/header/button[@name='duplicate_template']" position="attributes">
+                	 <attribute name="invisible">True</attribute>        
+                </xpath>
+                <xpath expr="/form/header/button[@name='reset_project']" position="attributes">
+                	 <attribute name="invisible">True</attribute>        
+                </xpath>
+                <xpath expr="/form/header/button[@name='set_cancel']" position="attributes">
+                	 <attribute name="groups">base.group_system</attribute>  
+						<attribute name="state">new,draft,evaluated,confirm,propose</attribute>       
+                </xpath>
+                
+                <xpath expr="/form/sheet/div/label[@for='name']" position="attributes">
+                	 <attribute name="invisible">True</attribute>        
+                </xpath>
+                <xpath expr="/form/sheet/div/h1/field[@name='name']" position="attributes">
+                	 <attribute name="placeholder">Nama Kegiatan</attribute>        
+ 					 <attribute name="readonly">False</attribute>
+ 					 <attribute name="state">new,draft</attribute>  
+                </xpath>
+                <xpath expr="/form/sheet/div/h1/field[@name='name']" position="after">
+                	 <h3><field name="code" placeholder="Kode Kegiatan"/></h3>    
+                </xpath>
+                
+                <xpath expr="/form/sheet/div[@name='buttons']/button[@string='Tasks']" position="before">
+                    <group attrs="{'invisible':[('count_correction','!=', 0)]}" >
+                    	<button name='generate_target_realisasi_bulanan'  string="Generate Target Bulanan" type="object"  attrs="{'invisible':[('state','not in', ('new'))]}" groups="project.group_project_user"/>
+                    	<div>
+							<h3><field name="status_target_bulanan"/></h3>      
+</div>  
+                    </group>
+                    <group attrs="{'invisible':[('count_correction','=', 0)]}" >
+                    	<button name='generate_revisi_target_realisasi_bulanan'  string="Revisi Target Bulanan" type="object"  attrs="{'invisible':[('state','not in', ('correction'))]}" groups="project.group_project_user"/>
+                    	<div attrs="{'invisible':[('state','!=', 'correction')]}">
+						<h4>*Anda Harus Menekan Tombol Revisi Target Bulanan,Jika Terjadi Perubahan Apapun Pada Target.Agar Perubahan Terjadi Juga Pada Pada Realisasi Bulanan</h4>
+						</div>       
+		             </group>
+                                               	       
+                </xpath>
+                
+                 <xpath expr="/form/sheet/div[@name='buttons']/button[@string='Tasks']" position="attributes">
+                    <attribute name="invisible">True</attribute>                                    	       
+                </xpath>
+                 <xpath expr="/form/sheet/div[@name='buttons']/button[@string='Documents']" position="attributes">
+                    <attribute name="invisible">True</attribute>                                    	       
+                </xpath>
+                
+                <xpath expr="/form/sheet/div/div[@name='options_active']" position="attributes">
+                    <attribute name="invisible">True</attribute>                    
+                	<!--<attribute name="string">Realisasi ?</attribute>   
+					<attribute name="help">Pembuatan Target Atau Realisasi. Jika Diceklis, Maka Form Yang Tampil Sekarang Adalah Form Isian Realisasi Kerja. Jika Tidak Maka Merupakan Target Kerja</attribute>-->       
+                </xpath>
+
+				<xpath expr="/form/sheet/group/group[1]" position="attributes">
+                	<attribute name="invisible">True</attribute>          
+                </xpath>
+				<xpath expr="/form/sheet/group/group[2]/field[@name='partner_id']" position="attributes">
+                	<attribute name="invisible">True</attribute>          
+                </xpath>
+                <xpath expr="/form/sheet/group/group[2]/p" position="attributes">
+                	<attribute name="invisible">True</attribute>          
+                </xpath>
+                
+		<!-- this is oe_chatter 
+                <xpath expr="/form/div[1]" position="attributes">
+                	<attribute name="invisible">True</attribute>          
+                </xpath>-->
+                <xpath expr="/form/sheet/group/group[2]/field[@name='partner_id']" position="after">
+                   		<field name="target_period_year"/>
+						<field name="target_type_id" on_change="onchange_targettype(target_type_id)"  />
+                		<field name="target_category" invisible="True"/>
+                    	<field name="target_period_month" attrs="{'invisible':[('target_category','!=','bulanan')],'required':[('target_category','=','bulanan')]}"/>
+                		<field name="lama_kegiatan" /> 
+                		<field name="satuan_lama_kegiatan" invisible="False" />
+                		<field name="count_correction" invisible="True" />
+                		
+                     	<field name='notes'/>                   
+                </xpath>
+                 <xpath expr="/form/sheet/notebook/page[@name='team']" position="before">
+                        <page string="Target" name="target" >
+                            <div name="dipa"  attrs="{'invisible': [('target_type_id','not in',('dipa_apbn','dpa_opd_biro','sotk','lain_lain'))]}" >
+		                        <group  col="3">
+		                        	<group >
+										<field name="target_jumlah_kuantitas_output"/>
+		                               	<field name="target_satuan_kuantitas_output"/>
+		                            </group>
+		                             <group>
+										<field name="target_kualitas"/>
+		                            </group>
+		                            <group>
+									   	<field name="target_waktu"/>
+									   	<field name="target_satuan_waktu"/>
+		                            </group>
+		                           
+		                        </group>
+		                        <group col="3">
+			                         <group>
+											<field name="target_biaya"  />      
+											<field name="total_biaya_bulanan" />                         	
+			                         </group>
+			                         <group>
+			                    	 		<field name="target_angka_kredit" widget="monetary"/>
+			                    	 		<field name="total_angka_kredit_bulanan" widget="monetary"/>  
+									 </group>
+		                        </group>
+		                        <hr />
+		                    </div>
+	                        
+	                        <div name="lain_lain"  attrs="{'invisible': [('target_type_id','!=','lain_lain')]}" >
+		                        <group col="1">
+			                         <group>
+											<field name="target_lainlain" invisible="True"/>                               	
+			                         </group>
+		                        </group>
+		                        
+		                    <hr /> 
+							</div>
+		                <newline/>
+		                <div >
+	                 		<field name="realisasi_lines" string="Target Bulanan" attrs="{'readonly': [('state','not in',('new','propose','correction'))],'invisible': [('state','in',('draft'))]}">
+								<tree string="Target Bulanan" editable="bottom" colors="red:suggest_realiasi_notsame==True">
+									<field name="name" invisible="True" />
+									<field name="target_period_month" readonly="False"  required="True" attrs="{'readonly': ['|',('project_state','not in',('new','correction')),('work_state','not in',('draft','realisasi'))]}"/>
+									<field name="target_jumlah_kuantitas_output" string="Kuantitas"   attrs="{'readonly': ['|',('work_state','not in',('draft','realisasi')),('project_state','not in',('new','correction'))],'required': [('project_state','in',('new','correction'))]}"/>
+									<field name="suggest_jumlah_kuantitas_output" string="Koreksi Atasan" attrs="{'readonly': [('work_state','not in',('draft','realisasi'))]}"  />
+									<field name="target_satuan_kuantitas_output" string="Satuan" attrs="{'readonly': [('work_state','not in',('draft','realisasi'))]}"  />
+	                                <field name="target_kualitas" string="Kualitas" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'readonly': ['|',('work_state','not in',('draft','realisasi')),('project_state','not in',('new','correction'))],'required': [('project_state','in',('new','correction'))]}"/>
+	                                <field name="suggest_kualitas" string="Koreksi Atasan" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'readonly': [('work_state','not in',('draft','realisasi'))]}"  />
+	                                <field name="target_waktu" string="Waktu" attrs="{'readonly': ['|',('work_state','not in',('draft','realisasi')),('project_state','not in',('new','correction'))],'required': [('project_state','in',('new','correction'))]}"/>
+	                                <field name="suggest_waktu" string="Koreksi Atasan" attrs="{'readonly': [('work_state','not in',('draft','realisasi'))]}" />
+	                                <field name="target_satuan_waktu" string="Satuan" attrs="{'readonly': ['|',('work_state','not in',('draft','realisasi')),('project_state','not in',('new','correction'))],'required': [('project_state','in',('new','correction'))]}"/>
+	                                <field name="target_angka_kredit" attrs="{'readonly': ['|',('work_state','not in',('draft','realisasi')),('project_state','not in',('new','correction'))]}"/>
+	                                <field name="target_biaya"    attrs="{'readonly': ['|',('work_state','not in',('draft','realisasi')),('project_state','not in',('new','correction'))]}"/>
+	                                <field name="suggest_biaya" string="Koreksi Atasan" attrs="{'readonly': [('work_state','not in',('draft','realisasi'))]}" />
+	                                <field name="state" invisible="True" />
+	                                <field name="work_state" invisible="True" />
+	                                <field name="project_state" invisible="True" />
+	                                <field name="suggest_realiasi_notsame"  invisible="True" />
+	                               <!--
+	                               <field name="work_state" -->
+	                            </tree>
+	                        </field>	
+						</div>
+						
+                		</page>
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page[@name='team']" position="attributes">
+                        <attribute name="invisible">True</attribute>                
+				</xpath>
+                <xpath expr="/form/sheet/notebook/page[@string='Other Info']/group/group[@name='misc']/field[@name='date_start']" position="attributes">
+                       <attribute name="required">False</attribute>     
+					   <attribute name="readonly">False</attribute>            
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page[@string='Other Info']/group/group[@name='misc']/field[@name='parent_id']" position="attributes">
+                              <attribute name="invisible">True</attribute>      
+                </xpath>
+              
+                 <xpath expr="/form/sheet/notebook/page[@string='Other Info']/group/group[@name='misc']/field[@name='date']" position="attributes">
+                       <attribute name="readonly">('state','not in',['new', 'draft'])</attribute>      
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page[@string='Other Info']/group/group[@name='misc']/field[@name='active']" position="attributes">
+                       <attribute name="readonly">('state','not in',['new', 'draft'])</attribute>      
+                </xpath>
+                 <xpath expr="/form/sheet/notebook/page[@string='Other Info']/group/group[@name='misc']/field[@name='priority']" position="attributes">
+                       <attribute name="readonly">('state','not in',['new', 'draft'])</attribute>      
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page[@string='Other Info']/group/group[@string='Email Interface']" position="attributes">
+	                   <attribute name="invisible">True</attribute>      
+				</xpath>
+				
+                <xpath expr="/form/sheet/notebook/page[@string='Other Info']/group/group[@name='misc']" position="after">
+                   <group string="Penanggung Jawab" name="mgmnt">
+							<field name="privacy_visibility" attrs="{'readonly':[('state','not in',['new', 'draft'])]}"/>
+                            <field name="user_id" string="Pegawai Yang dinilai" attrs="{'readonly':[('state','not in',['new', 'draft'])]}"/>
+                            <field name="user_id_atasan"  attrs="{'readonly':[('state','not in',['new', 'draft'])]}"/>
+                            <field name="user_id_banding"  attrs="{'readonly':[('state','not in',['new', 'draft'])]}"/>
+                            <field name="user_id_bkd"  attrs="{'readonly':[('state','not in',['new', 'draft'])]}"/>
+                            <field name="company_id"  readonly="True" string="OPD"/>                            
+                    </group>  
+				</xpath>
+				
+            </field>
+     </record>
+     
+     <record id="open_view_target_tahunan_all_filter" model="ir.ui.view">
+            <field name="name">project.project.select</field>
+            <field name="model">project.project</field>
+            <field name="arch" type="xml">
+                <search string="Cari Kegiatan">
+                    <field name="name" string="Nama Kegiatan"/>
+                    <field name="target_type_id" string="Jenis Kegiatan" />
+                    <field name="user_id" string="Pegawai Yang dinilai" />
+                    <field name="company_id" string="OPD" />
+                    <field name="target_period_year" string="Tahun" />
+                    <filter icon="terp-mail-message-new" string="Unread Messages" name="message_unread" domain="[('message_unread','=',True)]"/>
+                    <separator/>
+                    
+                    <filter icon="gtk-media-pause" string="Draft" name="Draft" domain="[('state', '=','draft')]" help="Draft Target"/>
+                    <filter icon="terp-check" string="Open" name="new" domain="[('state', '=','new')]" help="Target Yang Baru Dibuat"/>
+                    <filter icon="terp-check" string="Penilaian" name="propose" domain="[('state', '=','propose')]" help="Target Yang Sudah DIajukan"/>
+					<filter icon="terp-check" string="BKD" name="new" domain="[('state', '=','evaluated')]" help="Target Yang Sedang Di Verifikasi"/>
+                    <filter icon="terp-check" string="Confirm" name="confirm" domain="[('state', '=','confirm')]" help="Target Yang Sudah DIterima"/>
+                    
+                    <separator/>
+                    <filter icon="terp-personal+" string="Target Saya" domain="[('user_id', '=', uid)]" help="Semua Target Saya."/>
+                    <separator/>
+                    
+                    
+                    <group expand="0" string="Group By...">
+                        <filter string="Jenis Kegiatan" name="target_type_id" icon="terp-personal" domain="[]" context="{'group_by':'target_type_id'}"/>
+                        <filter string="OPD" name="" icon="terp-partner" domain="[]" context="{'group_by':'company_id'}"/>
+                        <filter string="Status" name="" icon="terp-partner" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Tahunan" name="" icon="terp-partner" domain="[]" context="{'group_by':'target_period_year'}"/>
+                        <filter string="Pegawai Yang Dinilai" name="user_id" help="target_period_year" icon="terp-folder-blue" domain = "[]" context="{'group_by':'user_id'}"/>
+                        <filter string="Pejabat Penilai" name="user_id_atasan" help="target_period_year" icon="terp-folder-blue" domain = "[]" context="{'group_by':'user_id_atasan'}"/>
+                        <filter string="Atasan Pejabat Penilai" name="user_id_banding" help="target_period_year" icon="terp-folder-blue" domain = "[]" context="{'group_by':'user_id_banding'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+      <record id="view_target_tahunan_all" model="ir.ui.view">
+            <field name="name">project.project.tree</field>
+            <field name="model">project.project</field>
+            <field name="field_parent">project.child_ids</field>
+            <field name="sequence" eval="0"/>
+             <field name="inherit_id" ref="project.view_project"/>
+            <field name="arch" type="xml">
+                   <xpath expr="/tree/field[@name='name']/.." position="attributes">
+            			<attribute name="fonts">bold:message_unread==True</attribute>   
+						<attribute name="colors">grey:state in ('confirm','closed','cancelled','deleted');blue:state in ('rejected_bkd','rejected_manager');brown:state == 'propose';green:state == 'evaluated'</attribute>   
+				</xpath>
+                   <xpath expr="/tree/field[@name='partner_id']" position="attributes">
+            			<attribute name="invisible">True</attribute>   
+					</xpath>
+					 <xpath expr="/tree/field[@name='progress_rate']" position="attributes">
+            			<attribute name="invisible">True</attribute>   
+					</xpath>
+					<xpath expr="/tree/field[@name='planned_hours']" position="attributes">
+            			<attribute name="invisible">True</attribute>   
+					</xpath>
+					<xpath expr="/tree/field[@name='total_hours']" position="attributes">
+            			<attribute name="invisible">True</attribute>   
+					</xpath>
+					<xpath expr="/tree/field[@name='effective_hours']" position="attributes">
+            			<attribute name="invisible">True</attribute>   
+					</xpath>
+					<xpath expr="/tree/field[@name='state']" position="attributes">
+            			<attribute name="invisible">True</attribute>   
+					</xpath>
+					<xpath expr="/tree/field[@name='user_id']" position="attributes">
+            			<attribute name="invisible">False</attribute>
+            			<attribute name="string">Penanggung Jawab</attribute>          
+					</xpath>
+					<xpath expr="/tree/field[@name='name']" position="attributes">
+            			<attribute name="string">Nama Kegiatan</attribute>   
+					</xpath>
+					<xpath expr="/tree/field[@name='name']" position="before">
+							<field name="target_type_id" />			
+					</xpath>
+					<xpath expr="/tree/field[@name='name']" position="after">
+            			  <field name="target_period_year" string="Tahun"/>
+            			  <field name="lama_kegiatan" string="Lama (Bulan)"/>
+            			  <field name="target_jumlah_kuantitas_output" widget="monetary"  attrs="{'invisible': [('target_type_id','not in',('dipa_apbn','dpa_opd_biro','sotk'))]}"/>
+            			<field name="target_kualitas" attrs="{'invisible': [('target_type_id','not in',('dipa_apbn','dpa_opd_biro','sotk'))]}"/>
+            			<field name="target_waktu" attrs="{'invisible': [('target_type_id','not in',('dipa_apbn','dpa_opd_biro','sotk'))]}"/>
+            			<field name="target_angka_kredit"  widget="monetary"  attrs="{'invisible': [('target_type_id','not in',('dipa_apbn','dpa_opd_biro','sotk'))]}"/>
+            			<field name="target_biaya"  attrs="{'invisible': [('target_type_id','not in',('dipa_apbn','dpa_opd_biro','sotk'))]}"  />
+					</xpath>
+       				<xpath expr="/tree/field[@name='user_id']" position="after">
+            			   <field name="state" />
+            			   <field name="currency_id" invisible="True"/>
+            			   <field name="company_id" invisible="True"/>
+            			   <field name="currency_id" invisible="True"/>
+            			   <field name="user_id_atasan" invisible="True"/>
+            			   <field name="user_id_banding" invisible="True"/>
+					</xpath>
+            </field>
+        </record>
+     <record id="open_view_target_tahunan_all" model="ir.actions.act_window">
+            <field name="name">Target Kegiatan</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="domain">[]</field>
+            <field name="view_mode">tree,form</field>
+            <field name="inherit_id" ref="project.open_view_project_all"/>
+            <field name="view_id" ref="project.view_project_kanban"/>
+            <field name="search_view_id" ref="open_view_target_tahunan_all_filter"/>
+            <field name="context">{'search_default_Current': 1}</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                  Tidak ada data target tahunan.
+              </p>
+            </field>
+        </record>
+         <record id="open_view_target_tahunan_saya" model="ir.actions.act_window">
+            <field name="name">Target Kerja Tahunan Pegawai</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="domain">[]</field>
+            <field name="view_mode">tree,form</field>
+            <field name="inherit_id" ref="project.open_view_project_all"/>
+            <field name="view_id" ref="project.view_project_kanban"/>
+            <field name="search_view_id" ref="open_view_target_tahunan_all_filter"/>
+            <field name="domain">[('user_id','=',uid)]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                  Click to start a new Target.
+                </p><p>
+                  Anda belum membuat target tahunan
+              </p>
+            </field>
+        </record>
+        <record id="open_view_target_tahunan_saya" model="ir.actions.act_window">
+            <field name="name">Target Kerja</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="domain">[]</field>
+            <field name="view_mode">tree,form</field>
+            <field name="inherit_id" ref="project.open_view_project_all"/>
+            <field name="view_id" ref="project.view_project_kanban"/>
+            <field name="search_view_id" ref="open_view_target_tahunan_all_filter"/>
+            <field name="domain">[('user_id','=',uid)]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                  -
+                </p><p>
+                  Saat ini tidak ada pengajuan Target Tahunan yang anda buat
+              </p>
+            </field>
+        </record>
+         <record id="open_view_target_tahunan_atasan" model="ir.actions.act_window">
+            <field name="name">Penilaian Target Kerja</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="domain">[]</field>
+            <field name="view_mode">tree,form</field>
+            <field name="inherit_id" ref="project.open_view_project_all"/>
+            <field name="view_id" ref="project.view_project_kanban"/>
+            <field name="search_view_id" ref="open_view_target_tahunan_all_filter"/>
+            <field name="domain">[('user_id_atasan','=',uid),('state','in',('propose','rejected_bkd'))]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                  -
+                </p><p>
+                  Saat ini tidak ada pengajuan Target Tahunan yang harus di periksa
+              </p>
+            </field>
+        </record>
+         <record id="open_view_target_tahunan_bkd" model="ir.actions.act_window">
+            <field name="name">Verifikasi Target Kerja</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="domain">[]</field>
+            <field name="view_mode">tree,form</field>
+            <field name="inherit_id" ref="project.open_view_project_all"/>
+            <field name="view_id" ref="project.view_project_kanban"/>
+            <field name="search_view_id" ref="open_view_target_tahunan_all_filter"/>
+            <field name="domain">[('user_id_bkd','=',uid),('state','=','evaluated')]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                 -
+                </p><p>
+                  Saat ini tidak ada pengajuan Target Tahunan yang harus di verifikasi
+              </p>
+            </field>
+        </record>
+	<!-- MENU -->
+	<menuitem action="open_view_target_tahunan_all" id="project.menu_projects" name="Target Kerja Unit" parent="menu_main_pm_all" sequence="1" groups="base.group_no_one"/>
+	<menuitem action="open_view_target_tahunan_saya" id="menu_target_saya" name="Target Kerja" parent="project.menu_project_management" sequence="2" groups="project.group_project_user,df_project.group_project_evaluated_bkd,df_project.group_project_appeal,project.group_project_manager,base.group_no_one"/>
+	<menuitem action="open_view_target_tahunan_atasan" id="menu_target_atasan" name="Penilaian Target Kerja" parent="project.menu_project_management" sequence="3" groups="project.group_project_manager,base.group_no_one"/>
+	<menuitem action="open_view_target_tahunan_bkd" id="menu_target_bkd" name="Verifikasi Target Kerja" parent="project.menu_project_management" sequence="4" groups="df_project.group_project_evaluated_bkd,base.group_no_one"/>
+	
+	<!-- Notif -->
+	<record id="view_notification_generate_task" model="ir.ui.view">
+            <field name="name">Notification</field>
+            <field name="model">notification.generate.task</field>
+            <field name="arch" type="xml">
+                <form string="Target" version="7.0">
+                    <separator string="Target Bulanan Berhasil Digenerate"/>
+                    
+                    <footer>
+                        <div>
+                            <button special="cancel" string="OK" class="oe_highlight"/>
+                        </div>
+                    </footer>
+                 </form>
+            </field>
+      </record>
+       <record id="action_view_notification_generate_task" model="ir.actions.act_window">
+            <field name="name">Notification</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">notification.generate.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+	<record id="view_notification_cancel_task" model="ir.ui.view">
+            <field name="name">Notification</field>
+            <field name="model">notification.cancel.task</field>
+            <field name="arch" type="xml">
+                <form string="Target" version="7.0">
+                    <separator string="Target Bulanan Berhasil Dibatalkan"/>
+                    
+                    <footer>
+                        <div>
+                            <button special="cancel" string="OK" class="oe_highlight"/>
+                        </div>
+                    </footer>
+                 </form>
+            </field>
+      </record>
+       <record id="action_view_notification_cancel_task" model="ir.actions.act_window">
+            <field name="name">Notification</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">notification.cancel.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+<!-- Kanban view -->
+        <record model="ir.ui.view" id="project.view_project_kanban">
+            <field name="name">project.project.kanban</field>
+            <field name="model">project.project</field>
+            <field name="sequence" eval="4"/>
+            <field name="arch" type="xml">
+                <kanban version="7.0" class="oe_background_grey">
+                    <field name="effective_hours"/>
+                    <field name="planned_hours"/>
+                    <field name="name"/>
+                    <field name="members"/>
+                    <field name="target_period_year"/>
+                    <field name="user_id"/>
+                    <field name="date"/>
+                    <field name="color"/>
+                    <field name="task_count"/>
+                    <field name="alias_id"/>
+                    <field name="alias_domain"/>
+                    <field name="lama_kegiatan"/>
+                    <field name="lama_kegiatan"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_project oe_kanban_global_click">
+                                <div class="oe_dropdown_toggle oe_dropdown_kanban" groups="base.group_user">
+                                    <span class="oe_e">í</span>
+                                    <ul class="oe_dropdown_menu">
+                                        <t t-if="widget.view.is_action_enabled('edit')"><li><a type="edit">Project Settings</a></li></t>
+                                        <t t-if="widget.view.is_action_enabled('delete')"><li><a type="delete">Delete</a></li></t>
+                                        <li><ul class="oe_kanban_colorpicker" data-field="color"/></li>
+                                    </ul>
+                                </div>
+                                <div class="oe_kanban_content">
+									
+                                    <h3><field name="name"/></h3>
+                                    
+                                    
+                                    <div class="oe_kanban_project_avatars">
+										<t t-if="record.user_id">                                                                        
+                                        <img t-att-src="kanban_image('res.users', 'image_small', record.user_id.raw_value.slice(0,11))"/>
+                                        </t>
+                                        <t t-if="record.user_id_atasan">
+										<img t-att-src="kanban_image('res.users', 'image_small', record.user_id_atasan.raw_value.slice(0,11))"/>
+										</t>
+                                        <t t-if="record.user_id_banding">
+										<img t-att-src="kanban_image('res.users', 'image_small', record.user_id_banding.raw_value.slice(0,11))"/>
+										</t>
+                                        <t t-if="record.user_id_bkd">
+                                        <img t-att-src="kanban_image('res.users', 'image_small', record.user_id_bkd.raw_value.slice(0,11))"/>
+                                        </t>                                        
+                                    </div>
+                                    
+                                    <div class="oe_kanban_footer_left">
+                                    <field name="state" color='blue'/>
+                                    </div>
+                                    <div  class="oe_kanban_footer_right">
+                                    <h4>@<field name="target_period_year"/> | <field name="lama_kegiatan"/> <field name="satuan_lama_kegiatan"/></h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+		
+	</data>
+</openerp>

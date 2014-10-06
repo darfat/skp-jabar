@@ -1,0 +1,48 @@
+
+
+import time
+import netsvc
+# from report import report_sxw
+from tools.translate import _
+import tools
+from datetime import datetime, timedelta
+from osv import fields, osv
+# from report import report_sxw
+from dateutil.relativedelta import relativedelta
+
+
+import decimal_precision as dp
+
+class report_fakturpajak(osv.osv_memory):
+    _name = "lap.fakturpajak"
+    _columns = {
+        'partner_id': fields.many2one('res.partner', 'Partner'),
+	'installment_id': fields.related('partner_id','installment_id', type='many2one', relation='installment.line', string='Angsuran'),
+        'type': fields.selection([('xls','Excel')],'File Type',required=True),
+    }
+    def compute_rep(self, cr, uid, ids, context={}):
+        value = self.read(cr, uid, ids)[0]
+        print '-------------------------------',value
+#        if not value['location_id']:
+#            raise osv.except_osv(('Perhatian !'), ('Silahkan memilih lokasi terlebih dahulu'))
+#         data = self.read(cr, uid, ids)[0]
+        datas = {
+             'ids': context.get('active_ids',[]),
+             'model': 'lap.fakturpajak',
+             'form': value
+                 }
+#         if value['type']=='pdf':
+#             return {
+#                 'type': 'ir.actions.report.xml',
+#                 'report_name': 'penjualan.form',
+#                 'report_type': 'webkit',
+#                 'datas': datas,
+#                 }
+#         else:
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'fakturpajak.lap.xls',
+            'report_type': 'webkit',
+            'datas': datas,
+            }
+report_fakturpajak()

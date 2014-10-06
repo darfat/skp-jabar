@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		<record model="ir.ui.view" id="view_target_tahunan_report">
+		    <field name="name">Laporan Rekapitulasi Kinerja</field>
+		    <field name="model">target.tahunan.report</field>
+		    <field name="type">form</field>
+		    <field name="arch" type="xml">
+			<form string="Laporan Rekapitulasi Kinerja" version="7.0">
+				<group>
+					<group string ="OPD" col="2" groups="df_project.group_project_evaluated_bkd">
+						<field name="company_id" class="oe_inline"  />
+					</group>								
+					
+					<group string ="Periode" col="2">
+						<field name="period_year" class="oe_inline"/>
+					</group>								
+													
+					<group string="Status" col="4">
+					<field name="draft" />
+					<field name="new" />			
+					<field name="propose" />
+					<field name="evaluated" />
+					<field name="confirm" />			
+					<field name="deleted" />				
+					</group>
+					
+					
+				</group>
+				<footer>
+					<div>
+						<button type="object" name="get_target_tahunan_report" string="Save Report" icon="terp-gtk-go-back-rtl"/>
+						or
+						<button special="cancel" string="Cancel" class="oe_link"/>
+					</div>
+				</footer>
+			</form>
+		    </field>
+		</record>
+		
+		<record model="ir.actions.act_window" id="action_target_tahunan_report">
+		    <field name="name">Laporan Target Tahunan</field>
+		    <field name="res_model">target.tahunan.report</field>
+		    <field name="type">ir.actions.act_window</field>
+		    <field name="view_type">form</field>
+		    <field name="view_mode">form</field>
+		    <field name="target">new</field>
+		    <field name="view_id" ref="view_target_tahunan_report"/>
+		</record>
+		
+	   
+		<menuitem action="action_target_tahunan_report"
+		   id="menu_action_target_tahunan_report"
+		   parent="df_report_skp_recapitulation.menu_report_skp" 
+		   sequence="1"
+			groups="base.group_no_one"
+		/>
+        </data>
+</openerp>

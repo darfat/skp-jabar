@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<!-- add skp in form employee --> 
+
+		
+		<record id="myself_action_data_pegawai" model="ir.actions.act_window">
+			<field name="name">Data Pegawai</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">res.partner</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">kanban,form</field>
+			<field name="domain">[('user_id','=',uid)]</field>
+			<field name="help" type="html">
+			<p class="oe_view_nocontent_create">
+			  Belum aktifasi User
+			</p>
+			</field>
+		</record>
+				
+		<record model="ir.actions.act_window.view" id="action_data_pegawai_kanban_view">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">kanban</field>
+			<field name="view_id" ref="df_partner_employee.data_pegawai_kanban_view"/>
+			<field name="act_window_id" ref="myself_action_data_pegawai"/>
+		</record>
+		<record model="ir.actions.act_window.view" id="action_data_pegawai_form_view">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="df_partner_employee.data_pegawai_form_view"/>
+			<field name="act_window_id" ref="myself_action_data_pegawai"/>
+		</record>
+
+	
+		
+
+	<!-- =========================================  kegiatan.pemprov Tree =============================================== -->
+
+		<record id="view_skp_employee_tree" model="ir.ui.view">
+            <field name="name">skp.employee.tree</field>
+            <field name="model">skp.employee</field>
+            <field name="arch" type="xml">
+                <tree string="Rekap Hasil SKP">
+                    <field name="employee_id"/>
+                    <field name="target_period_month"/>
+                    <field name="target_period_year"/>
+                    <field name="biro_name"/>
+                    <field name="department_name"/>
+                    <field name="skp_state_count"/>
+                    <field name="nilai_skp"/>
+                    <field name="nilai_skp_percent"/>
+					<field name="fn_nilai_tambahan"/>
+                    <field name="fn_nilai_kreatifitas"/>
+                    <field name="nilai_perilaku"/>
+                    
+                    <field name="nilai_skp_tambahan_percent"/>
+                    <field name="nilai_perilaku_percent"/>
+                    <field name="nilai_total"/>
+                    <field name="nilai_indeks"/>
+                </tree>
+            </field>
+        </record>
+        
+ 		 <record id="view_skp_employee_form" model="ir.ui.view">
+            <field name="name">skp.employee.form</field>
+            <field name="model">skp.employee</field>
+            <field name="arch" type="xml">
+                <form string="Satuan Hitung" version="7.0">
+                  
+                    <group col="2">
+                    <field name="employee_id"/>
+                    <field name="company_id"/>
+                    <field name="target_period_month"/>
+                    <field name="target_period_year"/>
+                    <field name="jml_skp"/>
+                    <field name="nilai_skp"/>
+                    <field name="nilai_skp_percent"/>
+                    <field name="jml_perilaku"/>
+                    <field name="nilai_perilaku"/>
+                    <field name="nilai_perilaku_percent"/>
+                    <field name="nilai_pelayanan"/>
+                    <field name="nilai_integritas"/>
+                    <field name="nilai_komitmen"/>
+                    <field name="nilai_disiplin"/>
+                    <field name="nilai_kerjasama"/>
+                    <field name="nilai_kepemimpinan"/>
+                    <field name="fn_nilai_tambahan"/>
+                    <field name="fn_nilai_kreatifitas"/>
+                    <field name="nilai_total"/>
+	                </group>                    
+                </form>
+            </field>
+        </record>
+        <!--
+		 <record model="ir.actions.act_window" id="action_skp_employee">
+            <field name="name">Hasil Realisasi Unit Kerja </field>
+            <field name="res_model">skp.employee</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('company_id', 'child_of', [uid.company_id.id])]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                
+              </p>
+            </field>
+        </record>-->
+        <record model="ir.actions.act_window" id="action_skp_employee_my">
+            <field name="name">Hasil Realisasi Pribadi</field>
+            <field name="res_model">skp.employee</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('user_id','=',uid)]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                
+              </p>
+            </field>
+        </record>
+		
+   <menuitem  id="menu_rekapitulasi" name="Rekapitulasi" parent="base.menu_main_pm"  sequence="3" groups="project.group_project_user,base.group_no_one"/>
+   <menuitem  id="menu_skp_kepegawaian" name="Info Kepegawaian" parent="base.menu_main_pm"  sequence="3" groups="project.group_project_user,base.group_no_one"/>
+    <menuitem parent="menu_rekapitulasi" id="menu_skp_employee_my" action="action_skp_employee_my" sequence="2"     groups="project.group_project_user" />
+   <menuitem action="myself_action_data_pegawai" id="menu_employee_data"
+            parent="menu_skp_kepegawaian"  sequence="1" />		
+
+
+</data>
+</openerp>
+

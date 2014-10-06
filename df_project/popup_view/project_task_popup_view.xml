@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>	
+		<record id="action_propose_rejected_popup_form_view" model="ir.ui.view">
+            <field name="name">project.task.propose.rejected.form</field>
+            <field name="model">project.task.propose.rejected</field>
+            <field name="arch" type="xml">
+                <form string="Usulan Penilaian Dari Atasan" version="7.0">
+                    <sheet>
+                                        
+                        <group col="2" >
+							<!-- ========================= SUGGEST ======================== -->		
+												<div attrs="{'invisible': [('is_suggest','=',False)]}">
+														<div  >
+									                        <group  col="2">
+									                        		<field name="jumlah_kuantitas_output" />
+									                               	<field name="satuan_kuantitas_output"/>
+									                            	<field name="kualitas" />
+									                            	<field name="waktu" />
+									                            	<field name="satuan_waktu" />
+									                        </group>
+									                        <group col="2">
+										                         	<field name="biaya"  />                               	
+										                         	<field name="angka_kredit"   />                               	
+									                        </group>
+									                    </div>
+									                    <div>
+									                    	<group >
+									                    			<field name="notes" placeholder="Silahkan isi kesimpulan dari penolakan penilaian..."/>		
+																	<field name="is_suggest" invisible="True" />	
+																	<field name="task_id" invisible="True" />	
+						                    	
+									                    	</group>								                    
+									                    </div>
+												</div> <!-- END DIV SUGGEST   -->
+												
+						</group> <!-- Group Kategori Suggest & Appeal  -->
+                    <footer>
+                        <button string='Tolak Penilaian' confirm="Apakah anda yakin telah mengisi data dengan benar ?" name="action_propose_rejected" type="object" class="oe_highlight" groups="project.group_project_manager"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record id="action_propose_rejected_popup" model="ir.actions.act_window">
+            <field name="name">Pengajuan Ditolak</field>
+            <field name="res_model">project.task.propose.rejected</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+           <field name="view_id" ref="action_propose_rejected_popup_form_view"/>
+           <field name="target">new</field>
+        </record>
+        
+
+		<record id="action_appeal_rejected_popup_form_view" model="ir.ui.view">
+            <field name="name">project.task.appeal.rejected.form</field>
+            <field name="model">project.task.appeal.rejected</field>
+            <field name="arch" type="xml">
+                <form string="Usulan Penilaian" version="7.0">
+                    <sheet>
+                                        
+                        <group col="2" >
+							<!-- ========================= SUGGEST ======================== -->		
+												<div attrs="{'invisible': [('is_appeal','=',False)]}">
+														<div  >
+									                        <group  col="2">
+									                        		<field name="jumlah_kuantitas_output" />
+									                               	<field name="satuan_kuantitas_output"/>
+									                            	<field name="kualitas" />
+									                            	<field name="waktu" />
+									                            	<field name="satuan_waktu" />
+									                        </group>
+									                        <group col="2">
+										                         	<field name="biaya"  />                               	
+										                         	<field name="angka_kredit"   />                               	
+									                        </group>
+									                    </div>
+									                    <div>
+									                    	<group >
+									                    			<field name="notes" placeholder="Silahkan isi kesimpulan dari penolakan penilaian..."/>		
+																	<field name="is_appeal" invisible="True" />	
+																	<field name="task_id" invisible="True" />	
+						                    	
+									                    	</group>								                    
+									                    </div>
+												</div> <!-- END DIV SUGGEST   -->
+												
+						</group> <!-- Group Kategori Suggest & Appeal  -->
+                    <footer>
+                        <button string='Tolak Pengajuan Banding' confirm="Apakah anda yakin telah mengisi data dengan benar ?" name="action_appeal_rejected" type="object" class="oe_highlight" groups="df_project.group_project_appeal"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        <record id="action_appeal_rejected_popup" model="ir.actions.act_window">
+            <field name="name">Pengajuan Banding Ditolak</field>
+            <field name="res_model">project.task.appeal.rejected</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+           <field name="view_id" ref="action_appeal_rejected_popup_form_view"/>
+           <field name="target">new</field>
+        </record>
+        
+   
+
+        <record id="action_perilaku_propose_rejected_popup_form_view" model="ir.ui.view">
+            <field name="name">project.perilaku.form</field>
+            <field name="model">project.task.perilaku.propose.rejected</field>
+            <field name="arch" type="xml">
+                <form string="Usulan Penilaian Dari Atasan" version="7.0">
+                    <sheet>
+                           <group col="1">
+                            	<field name="notes" />
+                            	<field name="target_type_id" invisible="True"/>
+								<field name="is_kepala_opd" invisible="True"/>
+								<field name="employee_job_type" invisible="True"/>
+														<group    >
+															<div name="perilaku_kerja_realisasi"  attrs="{'invisible': [('target_type_id','!=','perilaku')]}" >
+										                    	<group>
+										                    		<div>
+													                        <div style="background:#19bb9b" >
+													                        	<h3>Orientasi Pelayanan</h3>
+													                       	</div>
+																			<group col="2" >
+																				 <group>
+																				 
+																						<field name="jumlah_konsumen_pelayanan" string="Jumlah Pelayanan" /> 
+																						<field name="satuan_jumlah_konsumen_pelayanan" />    
+														                         		<field name="jumlah_tidakpuas_pelayanan" /> 
+														                         </group>
+																				 <group attrs="{'invisible': [('is_kepala_opd','=',False)]}" >
+																								<field name="ketepatan_laporan_spj" /> 
+																								<field name="ketepatan_laporan_ukp4" />       
+																                         		<field name="efisiensi_biaya_operasional" /> 
+														                         </group>
+													                        </group>
+													                        <div style="background:#19bb9b" >
+													                        	 	<h3>Integritas</h3>
+													                        </div>	
+																			<div style="background:#8addf6" >
+													                        	 	<h5>Hukuman Disiplin</h5>
+													                        </div>	
+																			<group col="2">
+																							<field name="integritas_hukuman"  />
+																							<field name="integritas_hukuman_ringan" attrs="{'invisible':[('integritas_hukuman','=', 'tidak')]}"/>    
+																							<field name="integritas_hukuman_sedang" attrs="{'invisible':[('integritas_hukuman','=',  'tidak')]}"/>
+																							<field name="integritas_hukuman_berat" attrs="{'invisible':[('integritas_hukuman','=',  'tidak')]}"/>                                	
+																							  
+															                </group>
+																			<div style="background:#8addf6" >
+													                        	 	<h5>Penghargaan</h5>
+													                        </div>	
+													                        <group col="4">
+													                        	 		<group col="2">
+																							<field name="integritas_presiden" />                        	
+																							<field name="integritas_gubernur" />
+																							<field name="integritas_kepalaopd" /> 
+																							<field name="integritas_atasan" />  
+															                        	</group>       
+																						<group col="2">
+																							<field name="integritas_es1" />  
+																							<field name="integritas_es2" />   
+																							<field name="integritas_es3"  invisible="True" />     
+															                       			<field name="integritas_es4"  invisible="True"  />																
+																						</group>                            	
+													                        </group>
+													                         <div style="background:#19bb9b" >
+													                        	 	<h3>Komitmen</h3>
+													                         </div>
+													                         <group col="2">
+													                         			<div>
+																						<group col="4">		
+																						    <field name="hadir_apel_pagi"  />		
+																							<field name="hadir_upacara_hari_besar" /> 
+														                         		</group>	 
+																						</div>                             	
+													                        </group>
+													                        <div style="background:#19bb9b" >
+													                        	 	<h3>Disiplin</h3>
+													                         </div>
+													                         <group col="2">
+													                         			<div>
+																						<group col="4">		
+																						    <field name="hadir_hari_kerja"  />  
+															                         		<field name="hadir_jam_kerja" />
+															                         	</group>	 
+																						</div>                             	
+													                        </group>
+													                        <div style="background:#19bb9b" >
+													                        	 	<h3>Kerjasama</h3>
+													                         </div>
+																			<group col="4">
+													                             		<group col="2">
+																							<field name="kerjasama_nasional" />                            	
+															                         		<field name="kerjasama_gubernur" />
+															                         		<field name="kerjasama_kepalaopd" />     
+																							<field name="kerjasama_atasan" />
+														                       			</group>
+														                       			<group col="2">                             	
+															                        		<field name="kerjasama_rapat_nasional" />         
+															                         		<field name="kerjasama_rapat_provinsi" />
+																							<field name="kerjasama_rapat_perangkat_daerah" />     
+															                       			<field name="kerjasama_rapat_atasan" />                                 	
+														                        		</group>            	
+													                        </group>
+													                        <div style="background:#19bb9b" attrs="{'invisible':[('employee_job_type','!=', 'struktural')]}"  >
+													                        	 	<h3>Kepemimpinan</h3>
+													                         </div>
+													                        <group col="4" attrs="{'invisible':[('employee_job_type','!=', 'struktural')]}" >
+													                        	 <div>
+													                        	 		<group col="2">
+																							<field name="kepemimpinan_nasional"/>                            	
+																							<field name="kepemimpinan_gubernur"/>                          	
+																							<field name="kepemimpinan_kepalaopd"/> 
+																							<field name="kepemimpinan_atasan"/>                                 	
+														                       			</group>
+											                        					<group col="2">
+											                        						<field name="kepemimpinan_narsum_nasional"/>                             	
+																							<field name="kepemimpinan_narsum_provinsi"/>
+															                        		<field name="kepemimpinan_narsum_perangkat_daerah"/>      
+															                       			<field name="kepemimpinan_narsum_unitkerja"/>                              	
+														                        		</group>                    	
+														                        </div>
+													                        </group>
+												                      </div>
+												                   </group>
+										                        </div>
+									                   		</group> <!-- END GROUP Realiasasi   -->  
+											  			
+                          
+                           </group>     
+                       
+	                    <footer>
+	                        <button string='Tolak Penilaian' confirm="Apakah anda yakin telah mengisi data dengan benar ?" name="action_perilaku_propose_rejected" type="object" class="oe_highlight" groups="project.group_project_manager"/>
+	                        or
+	                        <button string="Cancel" class="oe_link" special="cancel"/>
+	                    </footer>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        
+		<record id="action_perilaku_appeal_rejected_popup_form_view" model="ir.ui.view">
+            <field name="name">project.perilaku.appeal.popup.form</field>
+            <field name="model">project.task.perilaku.appeal.rejected</field>
+            <field name="arch" type="xml">
+                <form string="Usulan Penilaian Dari Atasan" version="7.0">
+                    <sheet>
+                           <group col="1">
+                            	<field name="notes" />
+                            	<field name="target_type_id" invisible="True"/>
+								<field name="is_kepala_opd" invisible="True"/>
+								<field name="employee_job_type" invisible="True"/>
+														<group    >
+															<div name="perilaku_kerja_realisasi"  attrs="{'invisible': [('target_type_id','!=','perilaku')]}" >
+										                    	<group>
+										                    		<div>
+													                        <div style="background:#19bb9b" >
+													                        	<h3>Orientasi Pelayanan</h3>
+													                       	</div>
+																			<group col="2" >
+																				 <group>
+																				 
+																						<field name="jumlah_konsumen_pelayanan" string="Jumlah Pelayanan" /> 
+																						<field name="satuan_jumlah_konsumen_pelayanan" />    
+														                         		<field name="jumlah_tidakpuas_pelayanan" /> 
+														                         </group>
+																				 <group attrs="{'invisible': [('is_kepala_opd','=',False)]}" >
+																								<field name="ketepatan_laporan_spj" /> 
+																								<field name="ketepatan_laporan_ukp4" />       
+																                         		<field name="efisiensi_biaya_operasional" /> 
+														                         </group>
+													                        </group>
+													                        <div style="background:#19bb9b" >
+													                        	 	<h3>Integritas</h3>
+													                        </div>	
+																			<div style="background:#8addf6" >
+													                        	 	<h5>Hukuman Disiplin</h5>
+													                        </div>	
+																			<group col="2">
+																							<field name="integritas_hukuman"  />
+																							<field name="integritas_hukuman_ringan" attrs="{'invisible':[('integritas_hukuman','=', 'tidak')]}"/>    
+																							<field name="integritas_hukuman_sedang" attrs="{'invisible':[('integritas_hukuman','=',  'tidak')]}"/>
+																							<field name="integritas_hukuman_berat" attrs="{'invisible':[('integritas_hukuman','=',  'tidak')]}"/>                                	
+																							  
+															                </group>
+																			<div style="background:#8addf6" >
+													                        	 	<h5>Penghargaan</h5>
+													                        </div>	
+													                        <group col="4">
+													                        	 		<group col="2">
+																							<field name="integritas_presiden" />                        	
+																							<field name="integritas_gubernur" />
+																							<field name="integritas_kepalaopd" /> 
+																							<field name="integritas_atasan" />  
+															                        	</group>       
+																						<group col="2">
+																							<field name="integritas_es1" />  
+																							<field name="integritas_es2" />   
+																							<field name="integritas_es3"  invisible="True" />     
+															                       			<field name="integritas_es4"  invisible="True"  />																
+																						</group>                            	
+													                        </group>
+													                         <div style="background:#19bb9b" >
+													                        	 	<h3>Komitmen</h3>
+													                         </div>
+													                         <group col="2">
+													                         			<div>
+																						<group col="4">		
+																						    <field name="hadir_apel_pagi"  />		
+																							<field name="hadir_upacara_hari_besar" /> 
+														                         		</group>	 
+																						</div>                             	
+													                        </group>
+													                        <div style="background:#19bb9b" >
+													                        	 	<h3>Disiplin</h3>
+													                         </div>
+													                         <group col="2">
+													                         			<div>
+																						<group col="4">		
+																						    <field name="hadir_hari_kerja"  />  
+															                         		<field name="hadir_jam_kerja" />
+															                         	</group>	 
+																						</div>                             	
+													                        </group>
+													                        <div style="background:#19bb9b" >
+													                        	 	<h3>Kerjasama</h3>
+													                         </div>
+																			<group col="4">
+													                             		<group col="2">
+																							<field name="kerjasama_nasional" />                            	
+															                         		<field name="kerjasama_gubernur" />
+															                         		<field name="kerjasama_kepalaopd" />     
+																							<field name="kerjasama_atasan" />
+														                       			</group>
+														                       			<group col="2">                             	
+															                        		<field name="kerjasama_rapat_nasional" />         
+															                         		<field name="kerjasama_rapat_provinsi" />
+																							<field name="kerjasama_rapat_perangkat_daerah" />     
+															                       			<field name="kerjasama_rapat_atasan" />                                 	
+														                        		</group>            	
+													                        </group>
+													                        <div style="background:#19bb9b" attrs="{'invisible':[('employee_job_type','!=', 'struktural')]}"  >
+													                        	 	<h3>Kepemimpinan</h3>
+													                         </div>
+													                        <group col="4" attrs="{'invisible':[('employee_job_type','!=', 'struktural')]}" >
+													                        	 <div>
+													                        	 		<group col="2">
+																							<field name="kepemimpinan_nasional"/>                            	
+																							<field name="kepemimpinan_gubernur"/>                          	
+																							<field name="kepemimpinan_kepalaopd"/> 
+																							<field name="kepemimpinan_atasan"/>                                 	
+														                       			</group>
+											                        					<group col="2">
+											                        						<field name="kepemimpinan_narsum_nasional"/>                             	
+																							<field name="kepemimpinan_narsum_provinsi"/>
+															                        		<field name="kepemimpinan_narsum_perangkat_daerah"/>      
+															                       			<field name="kepemimpinan_narsum_unitkerja"/>                              	
+														                        		</group>                    	
+														                        </div>
+													                        </group>
+												                      </div>
+												                   </group>
+										                        </div>
+									                   		</group> <!-- END GROUP Realiasasi   -->  
+											  			
+                          
+                           </group>     
+                       
+	                    <footer>
+	                        <button string='Tolak Pengajuan Banding' confirm="Apakah anda yakin telah mengisi data dengan benar ?" name="action_perilaku_appeal_rejected" type="object" class="oe_highlight" groups="df_project.group_project_appeal"/>
+	                        or
+	                        <button string="Cancel" class="oe_link" special="cancel"/>
+	                    </footer>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        
+		 <record id="action_tambahan_propose_rejected_popup_form_view" model="ir.ui.view">
+            <field name="name">project.tambahan.propose.rejected.form</field>
+            <field name="model">project.task.tambahan.propose.rejected</field>
+            <field name="arch" type="xml">
+                <form string="Usulan Penilaian Dari Atasan" version="7.0">
+                    <sheet>
+                           <group col="1">
+                            	<field name="notes" />
+                            	<field name="target_type_id" invisible="True"/>
+								<field name="task_id" invisible="True"/>
+								
+															<div name="tambahan_realisasi"  attrs="{'invisible': [('target_type_id','!=','tambahan')]}" >
+								                        		 <div style="background:#19bb9b" >
+															     	<h3>Tugas Tambahan</h3>
+															     </div>	
+																 <group col="2">
+											                         		<field name="tugas_tambahan" required="True"/>
+											                         		<field name="uraian_tugas_tambahan"/> 
+								                        		</group>
+																<div >
+															     	<h3>Ruang Lingkup :</h3>
+																</div>	
+
+								                        		<group col="6" >
+																		    <field name="rl_opd_tugas_tambahan" />
+											                         		<field name="rl_gubernur_tugas_tambahan" /> 
+																			<field name="rl_presiden_tugas_tambahan" />
+																</group>
+																<group col="2">
+																			<field name="attach_tugas_tambahan" invisible="True"/>
+																</group>
+								                        		 <div style="background:#19bb9b" >
+															     	<h3>Kreatifitas</h3>
+																 </div>	
+																 <group col="2">
+											                    			<field name="nilai_kreatifitas"   required="True"/>       
+																			<field name="uraian_kreatifitas" /> 
+																			<field name="tupoksi_kreatifitas" />
+																</group>
+								                        		<div >
+															     	<h3>Ruang Lingkup :</h3>
+																</div>	
+
+																<group col="6">
+																		    <field name="rl_opd_kreatifitas" />
+											                         		<field name="rl_gubernur_kreatifitas" /> 
+																			<field name="rl_presiden_kreatifitas" />
+																</group>
+																<group col="2">
+																			<field name="attach_kreatifitas" invisible="True"/>
+																</group>
+							                    			</div>
+                           </group>     
+	                    <footer>
+	                        <button string='Tolak Penilaian' confirm="Apakah anda yakin telah mengisi data dengan benar ?" name="action_tambahan_propose_rejected" type="object" class="oe_highlight" groups="project.group_project_manager"/>
+	                        or
+	                        <button string="Cancel" class="oe_link" special="cancel"/>
+	                    </footer>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        
+
+		<record id="action_tambahan_appeal_rejected_popup_form_view" model="ir.ui.view">
+            <field name="name">project.tambahan.appeal.rejected.form</field>
+            <field name="model">project.task.tambahan.appeal.rejected</field>
+            <field name="arch" type="xml">
+                <form string="Usulan Penilaian Dari Atasan" version="7.0">
+                    <sheet>
+                           <group col="1">
+                            	<field name="notes" />
+                            	<field name="target_type_id" invisible="True"/>
+								<field name="task_id" invisible="True"/>
+								
+															<div name="tambahan_realisasi"  attrs="{'invisible': [('target_type_id','!=','tambahan')]}" >
+								                        		 <div style="background:#19bb9b" >
+															     	<h3>Tugas Tambahan</h3>
+															     </div>	
+																 <group col="2">
+											                         		<field name="tugas_tambahan" required="True"/>
+											                         		<field name="uraian_tugas_tambahan"/> 
+								                        		</group>
+																<div >
+															     	<h3>Ruang Lingkup :</h3>
+																</div>	
+
+								                        		<group col="6" >
+																		    <field name="rl_opd_tugas_tambahan" />
+											                         		<field name="rl_gubernur_tugas_tambahan" /> 
+																			<field name="rl_presiden_tugas_tambahan" />
+																</group>
+																<group col="2">
+																			<field name="attach_tugas_tambahan" invisible="True"/>
+																</group>
+								                        		 <div style="background:#19bb9b" >
+															     	<h3>Kreatifitas</h3>
+																 </div>	
+																 <group col="2">
+											                    			<field name="nilai_kreatifitas"   required="True"/>       
+																			<field name="uraian_kreatifitas" /> 
+																			<field name="tupoksi_kreatifitas" />
+																</group>
+								                        		<div >
+															     	<h3>Ruang Lingkup :</h3>
+																</div>	
+
+																<group col="6">
+																		    <field name="rl_opd_kreatifitas" />
+											                         		<field name="rl_gubernur_kreatifitas" /> 
+																			<field name="rl_presiden_kreatifitas" />
+																</group>
+																<group col="2">
+																			<field name="attach_kreatifitas" invisible="True"/>
+																</group>
+							                    			</div>
+                           </group>     
+	                    <footer>
+	                        <button string='Tolak Pengajuan Banding' confirm="Apakah anda yakin telah mengisi data dengan benar ?" name="action_tambahan_appeal_rejected" type="object" class="oe_highlight" groups="df_project.group_project_appeal"/>
+	                        or
+	                        <button string="Cancel" class="oe_link" special="cancel"/>
+	                    </footer>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+        
+		<record id="action_verificate_rejected_popup_form_view" model="ir.ui.view">
+            <field name="name">project.task.verificate.rejected.form</field>
+            <field name="model">project.task.verificate.rejected</field>
+            <field name="arch" type="xml">
+                <form string="Usulan Penilaian Dari Verifikatur" version="7.0">
+                    <sheet>
+                                        
+                        <group col="2" >
+							<field name="notes" placeholder="Silahkan isi kesimpulan dari penolakan penilaian..."/>		
+							<field name="control_count"  />
+							<field name="is_control" invisible="True" />	
+							<field name="task_id" invisible="True" />							                    		
+						</group> 
+                    <footer>
+                        <button string='Tolak Verifikasi' confirm="Apakah anda yakin telah mengisi data dengan benar ?" name="action_verificate_rejected" type="object" class="oe_highlight" groups="df_project.group_project_evaluated_bkd"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                    </sheet>
+               </form>
+            </field>
+        </record>
+	</data>
+</openerp>

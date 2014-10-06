@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<!-- Kontak Petugas Verifikasi --> 
+		<record id="view_kontak_verifikasi_tree" model="ir.ui.view">
+            <field name="name">project.portal.tree</field>
+            <field name="model">project.portal</field>
+            <field name="arch" type="xml">
+                <tree string="Kontak Petugas Verifikasi Per OPD">
+                    <field name="notes"/>
+               
+                </tree>
+            </field>
+        </record>
+		
+		 <record model="ir.actions.act_window" id="action_kontak_verifikasi">
+            <field name="name">Kontak Petugas Verifikasi</field>
+            <field name="res_model">project.portal</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+			 <p >
+                <h1>Kontak Petugas Verifikasi Per OPD : </h1>
+                <ul>
+	                <li>
+	                 	DARYANA MULYANA, S.Sos ( <b>081220022023</b>   )
+	                	<ul>
+			                <LI>BADAN KOORDINASI PEMERINTAH DAN PEMBANGUNAN WILAYAH I</LI>
+							<LI>BADAN PEMBERDAYAAN MASYARAKAT DAN PEMERINTAHAN DESA</LI>
+							<LI>BADAN PEMBERDAYAAN PEREMPUAN PERLINDUNGAN ANAK PENGENDALIAN KEPENDUDUKAN DAN KELUARGA BERENCANA</LI>
+							<LI>BADAN PENDIDIKAN DAN PELATIHAN DAERAH</LI>
+							<LI>DINAS PERINDUSTRIAN DAN PERDAGANGAN</LI>
+							<LI>RUMAH SAKIT PARU</LI>
+
+		                </ul>
+	                </li>
+	                <li>
+	                 	Rd. YETTY SUDENDI, S.Sos ( <b>081220022018</b>   )
+	                	<ul>
+			                <LI>BADAN KOORDINASI PEMERINTAH DAN PEMBANGUNAN WILAYAH II</LI>
+<LI>BADAN KOORDINASI PROMOSI DAN PENANAMAN MODAL DAERAH.</LI>
+<LI>BADAN PELAYANAN PERIJINAN TERPADU</LI>
+<LI>BADAN PERENCANAAN PEMBANGUNAN DAERAH</LI>
+<LI>DINAS PERIKANAN DAN KELAUTAN</LI>
+<LI>DINAS PETERNAKAN</LI>
+<LI>SEKRETARIAT KOMISI PENYIARAN INDONESIA DAERAH</LI>
+
+		                </ul>
+	                </li>
+	                <li>
+	                 	ADE SUTINI, S.KM ( <b>081220022038</b>   )
+	                	<ul>
+			                <LI>BADAN KESATUAN BANGSA DAN POLITIK</LI>
+<LI>BADAN KETAHANAN PANGAN DAERAH</LI>
+<LI>BADAN KOORDINASI PEMERINTAH DAN PEMBANGUNAN WILAYAH III</LI>
+<LI>BADAN PERPUSTAKAAN DAN KEARSIPAN DAERAH</LI>
+<LI>DINAS KESEHATAN</LI>
+<LI>DINAS PERKEBUNAN</LI>
+<LI>SEKRETARIAT BADAN KOORDINASI PENYULUHAN PERTANIAN, PERIKANAN DAN KEHUTANAN</LI>
+
+		                </ul>
+	                </li>
+	                <li>
+	                 	YANTI WACHYUNI HERYAWAN, SH ( <b>081220022024</b>   )
+	                	<ul>
+			               <LI>BADAN KOORDINASI PEMERINTAH DAN PEMBANGUNAN WILAYAH IV</LI>
+<LI>DINAS ENERGI DAN SUMBER DAYA MINERAL</LI>
+<LI>DINAS KOMUNIKASI DAN INFORMATIKA</LI>
+<LI>DINAS KOPERASI DAN USAHA MIKRO, KECIL DAN MENENGAH</LI>
+<LI>DINAS PARIWISATA DAN KEBUDAYAAN</LI>
+
+		                </ul>
+	                </li>
+	                <li>
+	                 	HERI HERDIANA, S.IP ( <b>081220022036</b>   )
+	                	<ul>
+			                <LI>BADAN PENGELOLAAN LINGKUNGAN HIDUP DAERAH</LI>
+<LI>DINAS OLAH RAGA DAN PEMUDA</LI>
+<LI>DINAS PENDAPATAN</LI>
+<LI>SEKRETARIAT DEWAN PENGURUS KORPRI</LI>
+<LI>SEKRETARIAT DPRD PROVINSI JAWA BARAT</LI>
+
+		                </ul>
+	                </li>
+	                  <li>
+	                 	RIA INDRIANI SAMBAS, S.Psi ( <b>081220022035</b>   )
+	                	<ul>
+			                <LI>DINAS PERHUBUNGAN</LI>
+<LI>DINAS SOSIAL</LI>
+<LI>DINAS TENAGA KERJA DAN TRANSMIGRASI</LI>
+<LI>RUMAH SAKIT UMUM DAERAH AL IHSAN</LI>
+
+		                </ul>
+	                </li>
+	                <li>
+	                 	R. RANI RACHMAYATI, S.IP( <b>0812122212</b>   )
+	                	<ul>
+			               <LI>BADAN KEPEGAWAIAN DAERAH</LI>
+<LI>DINAS PERTANIAN TANAMAN PANGAN</LI>
+<LI>RUMAH SAKIT JIWA</LI>
+<LI>SEKRETARIAT BADAN KERJA SAMA PEMBANGUNAN JABODETABEKJUR</LI>
+<LI>SEKRETARIAT KOMISI PEMILIHAN UMUM</LI>
+
+		                </ul>
+	                </li>
+	                <li>
+	                 	ANDRIS YULI FARDANY, S.Si ( <b>081220022027</b>   )
+	                	<ul>
+			               <LI>DINAS BINA MARGA</LI>
+<LI>DINAS PENGELOLAAN SUMBER DAYA AIR</LI>
+
+		                </ul>
+	                </li>
+	                <li>
+	                 	RINI RUSTIANTY, SS.,M.Si( <b>081220022021</b>   )
+	                	<ul>
+			               <LI>DINAS KEHUTANAN</LI>
+<LI>DINAS PERMUKIMAN DAN PERUMAHAN</LI>
+<LI>INSPEKTORAT</LI>
+<LI>KANTOR PERWAKILAN PEMERINTAH</LI>
+<LI>PELAKSANA BADAN PENANGGULANGAN BENCANA DAERAH</LI>
+<LI>SATUAN POLISI PAMONG PRAJA</LI>
+
+		                </ul>
+	                </li>
+	                <li>
+	                 	YAYAT RUYATNA, SE.( <b>081322431885</b>   )
+	                	<ul>
+			               <LI>DINAS PENDIDIKAN</LI>
+
+		                </ul>
+	                </li>
+	                <li>
+	                 	 WIDYANINGSIH, SE.,MM (DIAN)( <b>081220022032</b>   ) <br/>
+	                 	<!--- DIAN GUNAWAN A.Md ( <b>0812122212</b>   ) <br/>
+	                 	- CHANDRAWULAN S.STP.,MAP (( <b>0812122212</b>   ) <br/>-->
+	                	<ul>
+			                <LI>SEKRETARIAT DAERAH</LI>
+
+		                </ul>
+	                </li>
+	              
+                </ul>
+              </p>
+             
+            </field>
+        </record>
+		<!-- Panduan --> 
+ 		 <record id="view_download_panduan_tree" model="ir.ui.view">
+            <field name="name">project.portal.tree</field>
+            <field name="model">project.portal</field>
+            <field name="arch" type="xml">
+                <tree string="Data Kegiatan">
+                    <field name="notes"/>
+               
+                </tree>
+            </field>
+        </record>
+		
+		 <record model="ir.actions.act_window" id="action_download_panduan">
+            <field name="name">Download Panduan</field>
+            <field name="res_model">project.portal</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+			<p >
+                <h1>Download Panduan : </h1>
+                <ul>
+	                <li>
+	                 	<a href="df_project_portal/static/manual/Dokumen Manual - Cara Input Realisasi - v2.pdf" class="btn btn-lg btn-primary">Download Petunjuk Cara Input Realisasi (Terbaru) </a>
+	                </li>
+                </ul>
+              </p>
+              <p >
+                <h2>Arsip : </h2>
+                <ul>
+	                <li>
+	                 	<a href="df_project_portal/static/manual/Dokumen Manual - Umum - Ubah Password - Data Pegawai.docx" class="btn btn-lg btn-primary">Download Petunjuk Umum</a>
+	                </li>
+	                  <li>
+	                 	<a href="df_project_portal/static/manual/Dokumen Manual - Pegawai Yang Dinilai - Pembuatan SKP Tahunan Bulanan.docx" class="btn btn-lg btn-primary">Download Petujuk Pembuatan SKP Tahunan</a>
+	                </li>
+	                <li>
+	                	<a href="df_project_portal/static/manual/Dokumen Manual -  Pegawai Yang Dinilai -  Pengisian SKP dan Perilaku.docx" class="btn btn-lg btn-primary">Download Petujuk Pengisian Realisasi Bulanan</a>
+					          
+	                </li>
+	                <li>
+	                	<a href="df_project_portal/static/manual/Dokumen Manual - Atasan Langsung - Approval Target.docx" class="btn btn-lg btn-primary">Download Petujuk Approval SKP Tahunan</a>
+						                
+	                </li>
+	                <li>
+	                	<a href="df_project_portal/static/manual/Dokumen Manual - Atasan Langsung - Approval Realisasi.docx" class="btn btn-lg btn-primary">Download Petujuk Approval Realisasi Bulanan</a>
+						                      
+	                </li>
+	                <li>
+	                	<a href="df_project_portal/static/manual/Dokumen Manual - Atasan Banding.docx" class="btn btn-lg btn-primary">Download Petunjuk Approval Banding</a>                
+	                </li>
+                </ul>
+              </p>
+            </field>
+        </record>
+		<menuitem id="other_menu" name="Info Lain" parent="base.menu_main_pm" sequence="20"/>
+		<menuitem parent="other_menu" id="menu_download_panduan" action="action_download_panduan" sequence="1"/>
+		<menuitem parent="other_menu" id="menu_kontak_verifikasi" action="action_kontak_verifikasi" sequence="2"/>		
+	</data>
+</openerp>

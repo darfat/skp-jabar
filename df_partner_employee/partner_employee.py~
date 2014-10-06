@@ -1,0 +1,119 @@
+# -*- encoding: utf-8 -*-
+##############################################################################
+#
+#    Darmawan Fatriananda
+#    BKD Pemprov Jabar
+#    Copyright (c) 2014 <http://www.asdarfat.wordpress.com.com>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see http://www.gnu.org/licenses/.
+#
+##############################################################################
+
+from openerp.osv import fields, osv
+from datetime import datetime,timedelta
+import time
+from mx import DateTime
+# ====================== res company ================================= #
+
+class res_partner(osv.Model):
+    _inherit = 'res.partner'
+    _description ='Data Kepegawaian'
+    
+    
+  
+    def onchange_atasan_banding_nip(self, cr, uid, ids, user_id, context=None):
+        res = {'value': {'user_id_banding_nip': False}}
+        if user_id:
+            user_obj = self.browse(cr, uid, [user_id,])
+            res['value']['user_id_banding_nip'] = user_obj and user_obj[0] and user_obj[0].nip or False
+        return res
+    
+    def onchange_atasan(self, cr, uid, ids, user_id_atasan, context=None):
+        res = {'value': {'user_id_banding': False,
+                         'user_id_atasan_nip': False
+                         }}
+        if user_id_atasan:
+            user_obj = self.browse(cr, uid, [user_id_atasan,])
+            res['value']['user_id_banding'] = user_obj and user_obj[0] and user_obj[0].user_id_atasan and user_obj[0].user_id_atasan.id or False
+            res['value']['user_id_atasan_nip'] = user_obj and user_obj[0] and user_obj[0].nip  or False
+        return res
+    
+    def _get_status_atasan_data_pegawai(self, cr, uid, ids, field_names, args, context=None):
+        res = {}
+        for employee in self.browse(cr, uid, ids, context=context):
+            message=True
+            
+            if not employee.user_id_banding :
+                message=False
+            if not employee.user_id_atasan :
+                message=False
+            if not employee.company_id :
+                message=False
+            
+            if not message:
+                res[employee.id] = 'False'
+            else :
+                res[employee.id] = ''
+        return res
+    
+    _columns = {
+        'nip'     : fields.char('NIP',size=20),    
+        'masa_kerja'     : fields.integer('Masa Kerja Sesuai Pengangkatan'),
+        'tempat_lahir'     : fields.char('Tempat Lahir',size=128),
+        'tanggal_lahir'     : fields.date('Tanggal Lahir'),
+        'diklat_kepemimpinan'     : fields.char('Diklat Kepemimpinan Terakhir',size=228),
+        'diklat_fungsional'     : fields.char('Diklat Fungsional Terakhir',size=228),
+        'agama'     : fields.selection([('islam', 'Islam'),  
+                                                      ('katholik', 'Katholik'), 
+                                                      ('protestan', 'Protestan'), 
+                                                      ('hindu', 'Hindu'), 
+                                                      ('budha', 'Budha') 
+                                                     ,
+                                                     ],'Agama', 
+                                                     ),
+        'biro_id': fields.many2one('partner.employee.biro', 'Bagian / Bidang', ),
+        'department_id': fields.many2one('partner.employee.department', 'Sub Bagian / Sub Bidang / Seksi / UPT'),
+        'job_type': fields.selection([('struktural', 'Jabatan Struktural'), ('jft', 'Jabatan Fungsional Umum'), ('jfu', 'Jabatan Fungsional Tertentu')], 'Tipe Jabatan'),
+        'eselon_id': fields.many2one('partner.employee.eselon', 'Eselon'),
+        'golongan_id': fields.many2one('partner.employee.golongan', 'Golongan'), 
+        'job_id': fields.many2one('partner.employee.job', 'Jabatan'),
+         'user_id_atasan': fields.many2one('res.partner', 'Pejabat Penilai' ,domain="[('employee','=',True)]" ),
+         'user_id_atasan_nip': fields.related('user_id_atasan','nip', type='char', string='Nip Pejabat Penilai', store=False,readonly=True),
+        'user_id_banding': fields.many2one('res.partner', 'Atasan Pejabat Penilai' ,domain="[('employee','=',True)]"),   
+        'user_id_banding_nip': fields.related('user_id_banding','nip', type='char', string='Nip Atasan Pejabat Penilai', store=False,readonly=True),
+   
+        'gelar_depan': fields.many2one('partner.employee.title', 'Gelar Depan',domain="[('title_type','=','gelar_depan')]"),
+        'gelar_blk': fields.many2one('partner.employee.title', 'Gelar Belakang',domain="[('title_type','=','gelar_belakang')]"),   
+        'nama_sekolah': fields.many2one('partner.employee.school', 'Nama Sekolah'),
+        'jurusan': fields.many2one('partner.employee.study', 'Jurusan Pendidikan'),
+         'is_head_of_all': fields.boolean('Walikota', ),
+         'is_share_users': fields.boolean('Shared', ),
+         'data_preparation': fields.boolean('Data Preparation', ),
+        'status_data_atasan_pegawai' :fields.function(_get_status_atasan_data_pegawai, method=True, string='Kelengkapan Data Atasan', type='char', readonly=True,store=False),
+        #'status_data_pegawai' :fields.function(_get_status_data_pegawai, method=True, string='Kelengkapan Data', type='char', readonly=True,store=False),
+        
+      
+    }
+    _defaults = {
+        'employee' : True,
+        'is_head_of_all' : False,
+        'data_preparation':False,
+    }
+    _sql_constraints = [
+         ('name_uniq', 'unique (nip)',
+             'Data Tidak Bisa Dimasukan, NIP Sudah Tersedia')
+     ]
+    def init(self, cr):
+        pass   
+res_partner()

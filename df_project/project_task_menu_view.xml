@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>	
+		<record model="ir.actions.act_window" id="open_view_realisasi_skp_atasan">
+            <field name="name">Penilaian SKP</field>
+            <field name="res_model">project.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="domain">[('user_id_atasan','=',uid),('work_state','in',('propose','rejected_bkd')),('task_category','=','skp')]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu ini khusus untuk atasan, dan menampilkan kegiatan yang harus di periksa.
+              </p>
+            </field>
+        </record>
+         <record model="ir.actions.act_window.view" id="action_menu_realisasi_skp_tree_view_atasan">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_tree"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_atasan"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="action_menu_realisasi_skp_form_view_atasan">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_form"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_atasan"/>
+		</record>
+     
+        <record model="ir.actions.act_window" id="open_view_realisasi_skp_banding">
+            <field name="name">Penilaian Banding</field>
+            <field name="res_model">project.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="open_view_realisasi_bulanan_all_filter"/>
+            <field name="domain">[('user_id_banding','=',uid),('work_state','=','appeal'),('task_category','=','skp')]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+               Menu ini khusus untuk atasan banding dan menampilkan realisasi yang sedang pengajuan banding 
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_menu_realisasi_skp_tree_view_banding">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_tree"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_banding"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="action_menu_realisasi_skp_form_view_banding">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_form"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_banding"/>
+		</record>
+		<record model="ir.actions.act_window" id="open_view_realisasi_skp_bkd">
+            <field name="name">Verifikasi SKP</field>
+            <field name="res_model">project.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="domain">[('user_id_bkd','=',uid),('work_state','=','evaluated'),('task_category','=','skp')]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu khusus untuk tim verifikatur, dan menampilkan kegiatan yang harus di verifikasi.
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_menu_realisasi_skp_tree_view_bkd">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_tree"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_bkd"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="action_menu_realisasi_skp_form_view_bkd">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_form"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_bkd"/>
+		</record>
+   		<record model="ir.actions.act_window" id="done_all_view_realisasi_skp_bkd">
+            <field name="name">SKP Selesai</field>
+            <field name="res_model">project.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="domain">[('user_id_bkd','=',uid),('work_state','=','done'),('task_category','=','skp')]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu khusus untuk tim verifikatur, dan menampilkan kegiatan yang harus di verifikasi.
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_menu_realisasi_skp_tree_view_bkd_done_all">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_tree"/>
+			<field name="act_window_id" ref="done_all_view_realisasi_skp_bkd"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="action_menu_realisasi_skp_form_view_bkd_bkd_done_all">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_form"/>
+			<field name="act_window_id" ref="done_all_view_realisasi_skp_bkd"/>
+		</record>
+        
+<!-- Unit-->
+         <record model="ir.actions.act_window" id="open_view_realisasi_skp_all">
+            <field name="name">Realisasi SKP</field>
+            <field name="res_model">project.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="domain">['|','|',('user_id_bkd','=',uid),('user_id_atasan','=',uid),('user_id_banding','=',uid),('task_category','=','skp')]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu ini menampilkan status kegiatan pegawai dan pegawai yang ada di bawahnya
+              </p>
+            </field>
+        </record>
+		 <record model="ir.actions.act_window.view" id="open_view_realisasi_skp_all_tree_view">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_tree"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_all"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="open_view_realisasi_skp_all_tree_view_form_view">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_form"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_all"/>
+		</record>
+<!-- Kategori --> 
+		<record model="ir.actions.act_window" id="open_view_realisasi_skp_bkd_100">
+            <field name="name">Verifikasi SKP Dengan Nilai Sementara 100</field>
+            <field name="res_model">project.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="domain">[('user_id_bkd','=',uid),('work_state','=','evaluated'),('task_category','=','skp'),('nilai_sementara','=',100)]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu khusus untuk tim verifikatur, dan menampilkan kegiatan yang harus di verifikasi.
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="open_view_realisasi_skp_bkd_100_tree">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_tree"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_bkd_100"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="open_view_realisasi_skp_bkd_100_from">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_form"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_bkd_100"/>
+		</record>		
+
+		<record model="ir.actions.act_window" id="open_view_realisasi_skp_bkd_70">
+            <field name="name">Verifikasi SKP Dengan Nilai Sementara 70 - 100</field>
+            <field name="res_model">project.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="domain">[('user_id_bkd','=',uid),('work_state','=','evaluated'),('task_category','=','skp'),('nilai_sementara','&gt;=',70),('nilai_sementara','&lt;',100)]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu khusus untuk tim verifikatur, dan menampilkan kegiatan yang harus di verifikasi.
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="open_view_realisasi_skp_bkd_70_tree">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_tree"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_bkd_70"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="open_view_realisasi_skp_bkd_70_from">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_form"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_bkd_70"/>
+		</record>		
+		<record model="ir.actions.act_window" id="open_view_realisasi_skp_bkd_30">
+            <field name="name">Verifikasi SKP Dengan Nilai Sementara 30 - 70</field>
+            <field name="res_model">project.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="domain">[('user_id_bkd','=',uid),('work_state','=','evaluated'),('task_category','=','skp'),('nilai_sementara','&gt;=',30),('nilai_sementara','&lt;',70)]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu khusus untuk tim verifikatur, dan menampilkan kegiatan yang harus di verifikasi.
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="open_view_realisasi_skp_bkd_30_tree">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_tree"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_bkd_30"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="open_view_realisasi_skp_bkd_30_from">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_form"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_bkd_30"/>
+		</record>		
+		
+		<record model="ir.actions.act_window" id="open_view_realisasi_skp_bkd_u30">
+            <field name="name">Verifikasi SKP Dengan Nilai Sementara Kurang Dari 30</field>
+            <field name="res_model">project.task</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="domain">[('user_id_bkd','=',uid),('work_state','=','evaluated'),('task_category','=','skp'),('nilai_sementara','&lt;',30)]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu khusus untuk tim verifikatur, dan menampilkan kegiatan yang harus di verifikasi.
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="open_view_realisasi_skp_bkd_u30_tree">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_tree"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_bkd_u30"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="open_view_realisasi_skp_bkd_u30_from">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_menu_realisasi_skp_form"/>
+			<field name="act_window_id" ref="open_view_realisasi_skp_bkd_u30"/>
+		</record>		
+		<menuitem action="open_view_realisasi_skp_atasan" id="view_realisasi_skp_atasan" name="Penilaian SKP" parent="project.menu_project_management" sequence="52" groups="project.group_project_manager,base.group_no_one"/>
+		<menuitem action="open_view_realisasi_skp_banding" id="view_realisasi_skp_banding" name="Penilaian Banding SKP" parent="project.menu_project_management" sequence="53" groups="group_project_appeal,base.group_no_one"/>
+		<menuitem action="open_view_realisasi_skp_bkd" id="view_realisasi_skp_bkd" name="Verifikasi SKP" parent="project.menu_project_management" sequence="54" groups="group_project_evaluated_bkd,base.group_no_one"/>
+		<menuitem  id="view_realisasi_skp_bkd_category" name="Verifikasi Kategori (Nilai Sementara)" parent="project.menu_project_management" sequence="55" groups="group_project_evaluated_bkd,base.group_no_one"/>
+		<menuitem action="open_view_realisasi_skp_bkd_100" id="view_realisasi_skp_bkd_100" name="100" parent="view_realisasi_skp_bkd_category" sequence="1" groups="group_project_evaluated_bkd,base.group_no_one"/>
+		<menuitem  action="open_view_realisasi_skp_bkd_70" id="view_realisasi_skp_bkd_70" name="70-100" parent="view_realisasi_skp_bkd_category" sequence="2" groups="group_project_evaluated_bkd,base.group_no_one"/>
+		<menuitem action="open_view_realisasi_skp_bkd_30" id="view_realisasi_skp_bkd_30"  name="30-70" parent="view_realisasi_skp_bkd_category" sequence="3" groups="group_project_evaluated_bkd,base.group_no_one"/>
+		<menuitem  action="open_view_realisasi_skp_bkd_u30" id="view_realisasi_skp_bkd_u30" name="Kurang Dari 30" parent="view_realisasi_skp_bkd_category" sequence="4" groups="group_project_evaluated_bkd,base.group_no_one"/>
+
+		<menuitem action="done_all_view_realisasi_skp_bkd" id="done_realisasi_skp_bkd" name="SKP Selesai" parent="project.menu_project_management" sequence="60" groups="group_project_evaluated_bkd,base.group_no_one"/>
+		
+		<menuitem action="open_view_realisasi_skp_all" id="view_realisasi_skp_all" name="Realisasi SKP Unit" parent="menu_main_pm_all" sequence="1" groups="group_project_appeal,group_project_evaluated_bkd,project.group_project_manager,base.group_no_one"/>
+		
+		
+<!-- ========================================= Realisasi Perilaku Menu =============================================== -->
+		 <record model="ir.actions.act_window" id="action_menu_realisasi_perilaku_atasan">
+            <field name="name">Penilaian Perilaku Dan Tugas Tambahan</field>
+            <field name="res_model">project.task</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('user_id_atasan','=',uid),('work_state','in',('propose','rejected_bkd')),('task_category','=','non_skp')]</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu ini khusus untuk atasan, dan menampilkan kegiatan Perilaku,Tugas Tambahan, Dan Kreatifitas yang harus di periksa.
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="tree_view_menu_realisasi_perilaku_atasan">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="df_project.view_menu_realisasi_perilaku_tree"/>
+			<field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+			<field name="act_window_id" ref="action_menu_realisasi_perilaku_atasan"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="form_view_menu_realisasi_perilaku_atasan">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="df_project.view_menu_realisasi_perilaku_form"/>
+			<field name="act_window_id" ref="action_menu_realisasi_perilaku_atasan"/>
+		</record>
+		
+		<record model="ir.actions.act_window" id="action_menu_realisasi_perilaku_banding">
+            <field name="name">Penilaian Banding Perilaku Dan Tugas Tambahan</field>
+            <field name="res_model">project.task</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('user_id_banding','=',uid),('work_state','=','appeal'),('task_category','=','non_skp')]</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu ini khusus untuk atasan banding dan menampilkan realisasi yang sedang pengajuan banding
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="tree_view_menu_realisasi_perilaku_banding">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="df_project.view_menu_realisasi_perilaku_tree"/>
+			<field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+			<field name="act_window_id" ref="action_menu_realisasi_perilaku_banding"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="form_view_menu_realisasi_perilaku_banding">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="df_project.view_menu_realisasi_perilaku_form"/>
+			<field name="act_window_id" ref="action_menu_realisasi_perilaku_banding"/>
+		</record>
+		
+		<record model="ir.actions.act_window" id="action_menu_realisasi_perilaku_bkd">
+            <field name="name">Verifikasi Perilaku Dan Tugas Tambahan</field>
+            <field name="res_model">project.task</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('user_id_bkd','=',uid),('work_state','=','evaluated'),('task_category','=','non_skp')]</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu khusus untuk tim verifikatur, dan menampilkan kegiatan yang harus di verifikasi.
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="tree_view_menu_realisasi_perilaku_bkd">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="df_project.view_menu_realisasi_perilaku_tree"/>
+			<field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+			<field name="act_window_id" ref="action_menu_realisasi_perilaku_bkd"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="form_view_menu_realisasi_perilaku_bkd">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="df_project.view_menu_realisasi_perilaku_form"/>
+			<field name="act_window_id" ref="action_menu_realisasi_perilaku_bkd"/>
+		</record>
+		
+		<record model="ir.actions.act_window" id="action_menu_done_realisasi_perilaku_bkd">
+            <field name="name">Realisasi Perilaku Dan Tugas Tambahan Selesai</field>
+            <field name="res_model">project.task</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('user_id_bkd','=',uid),('work_state','=','done'),('task_category','=','non_skp')]</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Menu khusus untuk tim verifikatur, dan menampilkan kegiatan yang harus di verifikasi.
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="tree_view_menu_done_realisasi_perilaku_bkd">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="df_project.view_menu_realisasi_perilaku_tree"/>
+			<field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+			<field name="act_window_id" ref="action_menu_done_realisasi_perilaku_bkd"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="form_view_menu_done_realisasi_perilaku_bkd">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="df_project.view_menu_realisasi_perilaku_form"/>
+			<field name="act_window_id" ref="action_menu_done_realisasi_perilaku_bkd"/>
+		</record>
+		
+	<!-- Unit -->
+		<record model="ir.actions.act_window" id="action_menu_realisasi_perilaku_all">
+            <field name="name">Realisasi Perilaku Dan Tugas Tambahan</field>
+            <field name="res_model">project.task</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">['|','|',('user_id_bkd','=',uid),('user_id_atasan','=',uid),('user_id_banding','=',uid),('task_category','=','non_skp')]</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Data Kosong
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="tree_view_menu_realisasi_perilaku_all">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="df_project.view_menu_realisasi_perilaku_tree"/>
+			<field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+			<field name="act_window_id" ref="action_menu_realisasi_perilaku_all"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="form_view_menu_realisasi_perilaku_all">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="df_project.view_menu_realisasi_perilaku_form"/>
+			<field name="act_window_id" ref="action_menu_realisasi_perilaku_all"/>
+		</record>
+		
+		<menuitem action="action_menu_realisasi_perilaku_atasan" id="menu_realisasi_perilaku_atasan" name="Penilaian Realisasi" parent="menu_perilaku" sequence="54" groups="project.group_project_manager"/>
+		<menuitem action="action_menu_realisasi_perilaku_banding" id="menu_realisasi_perilaku_banding" name="Penilaian Banding Realisasi" parent="menu_perilaku" sequence="55" groups="df_project.group_project_appeal"/>
+		<menuitem action="action_menu_realisasi_perilaku_bkd" id="menu_realisasi_perilaku_bkd" name="Verifikasi Realisasi" parent="menu_perilaku" sequence="56" groups="df_project.group_project_evaluated_bkd"/>		
+		<menuitem action="action_menu_done_realisasi_perilaku_bkd" id="menu_done_realisasi_perilaku_bkd" name="Realisasi Selesai" parent="menu_perilaku" sequence="57" groups="df_project.group_project_evaluated_bkd"/>
+		
+		<menuitem action="action_menu_realisasi_perilaku_all" id="menu_realisasi_perilaku_all" name="Realisasi Perilaku Unit" parent="menu_main_pm_all"  sequence="69" groups="project.group_project_manager,df_project.group_project_appeal,df_project.group_project_evaluated_bkd"/>
+
+	</data>
+</openerp>

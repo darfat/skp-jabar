@@ -1,0 +1,15 @@
+{
+    "name": "Employee Target Summary Report",
+    "version": "1.0",
+    "author": "Darmawan Fatriananda",
+    "category": "Reporting /Employee /",
+    "description": "Laporan Data Pegawai .",
+    "website" : "www.asdarfat.wordpress.com",
+    "license" : "",
+    "depends": ['hr'],
+    "init_xml": [],
+    'update_xml': ["employee_data_summary_report.xml",],
+    'demo_xml': [],
+    'installable': True,
+    'active': False,
+}

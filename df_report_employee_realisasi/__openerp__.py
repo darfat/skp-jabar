@@ -1,0 +1,15 @@
+{
+    "name": "Employee Realisasi Summary Report",
+    "version": "1.0",
+    "author": "Darmawan Fatriananda",
+    "category": "Reporting /Employee /",
+    "description": "Laporan Data Pegawai Yang Belum Membuat Realisasi.",
+    "website" : "www.asdarfat.wordpress.com.com",
+    "license" : "",
+    "depends": ['base','project','hr'],
+    "init_xml": [],
+    'update_xml': ["employee_realisasi_summary_report.xml",],
+    'demo_xml': [],
+    'installable': True,
+    'active': False,
+}

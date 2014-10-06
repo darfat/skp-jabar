@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		<record model="ir.ui.view" id="view_skp_monthly_recapitulation_report">
+			<field name="name">Rekapitulasi SKP (Nilai Toleransi)</field>
+			<field name="model">skp.monthly.recapitulation.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Rekapitulasi SKP (Nilai Toleransi)" version="7.0">
+					<group>
+						<field name="period_month" class="oe_inline"/>
+						<field name="period_year" class="oe_inline"/>
+						<field name="is_kepala_opd" />
+						<field name="company_id" attrs="{'invisible':[('is_kepala_opd','!=',False)],'required':[('is_kepala_opd','!=',True)]}"/>
+						<field name="biro_id" attrs="{'invisible':[('is_kepala_opd','!=',False)]}"/>
+						
+						
+					</group>
+					<footer>
+						<div>
+							<button type="object" name="get_skp_monthly_recapitulation_report" string="Save
+								Report" icon="terp-gtk-go-back-rtl"/>
+							
+					or
+					
+							<button special="cancel" string="Cancel" class="oe_link"/>
+						</div>
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_skp_monthly_recapitulation_report">
+			<field name="name">Rekapitulasi SKP (Nilai Toleransi)</field>
+			<field name="res_model">skp.monthly.recapitulation.report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+			<field name="view_id" ref="view_skp_monthly_recapitulation_report"/>
+		</record>
+		<menuitem id="menu_skp_rekap_evaluation_admin"
+		   parent="df_project.menu_rekapitulasi"  
+		   name="Rekapitulasi Evaluasi Admin" 
+		   groups="base.group_no_one"  
+		   sequence="101" />
+		<menuitem action="action_skp_monthly_recapitulation_report"  id="menu_action_skp_monthly_recapitulation_report"
+			parent="menu_skp_rekap_evaluation_admin"   sequence="1" 
+			groups="base.group_no_one" 
+			/>
+	</data>
+</openerp>

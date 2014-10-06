@@ -1,0 +1,15 @@
+{
+    "name": "AR Finance Report ",
+    "version": "1.0",
+    "author": "Darmawan Fatriananda",
+    "category": "Reporting /Finance",
+    "description": "Membuat rekapan piutang periode tertentu. Istana Group.",
+    "website" : "www.asdarfat.wordpress.com",
+    "license" : "",
+    "depends": ['base','ad_property_unit','ad_property_sales'],
+    "init_xml": [],
+    'update_xml': ["ar_finance_report.xml",],
+    'demo_xml': [],
+    'installable': True,
+    'active': False,
+}

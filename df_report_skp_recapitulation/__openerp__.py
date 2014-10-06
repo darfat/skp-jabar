@@ -1,0 +1,15 @@
+{
+    "name": "Rekapitulasi Kegiatan",
+    "version": "1.0",
+    "author": "Darmawan Fatriananda",
+    "category": "Penilaian Prestasi Kerja /Reporting / Rekapitulasi",
+    "description": "Rekapitulasi Kegiatan",
+    "website" : "www.asdarfat.wordpress.com",
+    "license" : "",
+    "depends": ['project','hr'],
+    "init_xml": [],
+    'update_xml': ["skp_recap_report.xml",],
+    'demo_xml': [],
+    'installable': True,
+    'active': False,
+}

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+	
+
+		<record id="view_skp_employee_yearly_tree" model="ir.ui.view">
+            <field name="name">skp.employee.yearly.tree</field>
+            <field name="model">skp.employee.yearly</field>
+            <field name="arch" type="xml">
+                <tree string="Rekapitulasi Tahunan">
+                    <field name="employee_id"/>
+                    <field name="target_period_year"/>
+                    <field name="jml_skp"/>
+                    <field name="nilai_skp"/>
+                    <field name="nilai_skp_percent"/>
+                    <field name="jml_perilaku"/>
+                    <field name="nilai_perilaku"/>
+                    <field name="nilai_pelayanan"/>
+                    <field name="nilai_integritas"/>
+                    <field name="nilai_komitmen"/>
+                    <field name="nilai_disiplin"/>
+                    <field name="nilai_kerjasama"/>
+                    <field name="nilai_kepemimpinan"/>
+
+                    
+					<field name="fn_nilai_tambahan"/>
+                    <field name="fn_nilai_kreatifitas"/>
+                    <field name="nilai_skp_tambahan_percent"/>
+                    <field name="nilai_perilaku_percent"/>
+                    
+                    <field name="nilai_total"/>
+                    <field name="indeks_nilai_total"/>
+                    
+                </tree>
+            </field>
+        </record>
+        
+ 		 <record id="view_skp_employee_yearly_form" model="ir.ui.view">
+            <field name="name">skp.employee.yearly.form</field>
+            <field name="model">skp.employee.yearly</field>
+            <field name="arch" type="xml">
+                <form string="Rekapitulasi Tahunan" version="7.0">
+                    <group col="2">
+                    <field name="employee_id"/>
+                    <field name="target_period_year"/>
+                    <field name="jml_skp"/>
+                    <field name="nilai_skp"/>
+                    
+                    <field name="jml_perilaku"/>
+                    <field name="nilai_perilaku"/>
+                    
+                    <field name="nilai_pelayanan"/>
+                    <field name="nilai_integritas"/>
+                    <field name="nilai_komitmen"/>
+                    <field name="nilai_disiplin"/>
+                    <field name="nilai_kerjasama"/>
+                    <field name="nilai_kepemimpinan"/>
+                    <field name="nilai_skp_percent"/>
+					<field name="fn_nilai_tambahan"/>
+                    <field name="fn_nilai_kreatifitas"/>
+                    <field name="nilai_perilaku_percent"/>
+                    <field name="nilai_total"/>
+	                </group>                    
+                </form>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_menu_skp_employee_yearly">
+            <field name="name">Rekapitulasi Tahunan</field>
+            <field name="res_model">skp.employee.yearly</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('user_id','=',uid)]</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                
+              </p>
+            </field>
+        </record>
+        
+		<menuitem action="action_menu_skp_employee_yearly" id="menu_skp_employee_yearly" name="Hasil Rekapitulasi Tahunan" parent="df_project.menu_rekapitulasi" sequence="2"  groups="project.group_project_user,df_project.group_project_evaluated_bkd"/>
+        
+	</data>
+</openerp>

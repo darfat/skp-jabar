@@ -1,0 +1,15 @@
+{
+    "name": "Laporan Target Tahunan ",
+    "version": "1.0",
+    "author": "Darmawan Fatriananda",
+    "category": "Penilaian Prestasi Kinerja / Report / Laporan Target Tahunan",
+    "description": "Laporan Target Kegiatan",
+    "website" : "www.asdarfat.wordpress.com",
+    "license" : "",
+    "depends": ['project','hr'],
+    "init_xml": [],
+    'update_xml': ["target_tahunan_report.xml",],
+    'demo_xml': [],
+    'installable': True,
+    'active': False,
+}

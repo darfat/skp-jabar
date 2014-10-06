@@ -1,0 +1,15 @@
+{
+    "name": "Laporan Rekapitulasi Realisasi Per Status",
+    "version": "1.0",
+    "author": "Darmawan Fatriananda",
+    "category": "Penilaian Prestasi Kerja/Rekapitulasi /Rekapitulasi Bulanan /",
+    "description": "Laporan Rekapitulasi Realisasi Per Status.",
+    "website" : "www.asdarfat.wordpress.com.com",
+    "license" : "",
+    "depends": ['base','project','hr'],
+    "init_xml": [],
+    'update_xml': ["employee_realisasi_recapitulation_report.xml",],
+    'demo_xml': [],
+    'installable': True,
+    'active': False,
+}

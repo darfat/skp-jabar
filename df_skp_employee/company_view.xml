@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+	<!-- =========================================  Akumulasi Perhitungan Target Tahunan Per Company=============================================== -->
+		<record id="view_company_form_custom" model="ir.ui.view">
+            <field name="name">res.company.config.custom</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+               <xpath expr="//group[@string='Bank Accounts']" position="attributes">
+                    <attribute name="invisible">True</attribute>   
+               </xpath>
+               <xpath expr="//group[@string='Report Footer Configuration']" position="attributes">
+                    <attribute name="invisible">True</attribute>   
+               </xpath>
+               <xpath expr="//page[@string='Header/Footer']" position="attributes">
+                    <attribute name="invisible">True</attribute>   
+               </xpath>
+               <xpath expr="//page[@string='Configuration']" position="attributes">
+                    <attribute name="invisible">False</attribute>   
+               </xpath>
+               <xpath expr="//group[@string='Bank Accounts']" position="attributes">
+                    <attribute name="invisible">True</attribute>   
+               </xpath>
+                <xpath expr="//page[@string='General Information']" position="attributes">
+                    <attribute name="string">Informasi Umum</attribute>   
+               </xpath>
+               <xpath expr="//page[@string='Configuration']" position="attributes">
+                    <attribute name="string">Konfigurasi</attribute>   
+               </xpath>
+               
+				<xpath expr="//button[@string='Preview Header/Footer']" position="after">
+                    <button name="action_company_summary_target" string="Proses Akumulasi Target Tahunan" type="object" class="oe_highlight" 
+                    help="Tombol ini berfungsi untuk merekap realisasi kegiatan bulanan pada target tahunan"/>
+               </xpath>
+            </field>
+        </record>
+		
+        <!-- Notif -->
+		<record id="view_notification_company_summary_target" model="ir.ui.view">
+            <field name="name">Akumulasi Target Per OPD</field>
+            <field name="model">notification.company.summary.target</field>
+            <field name="arch" type="xml">
+                <form string="Kalkulasi Target Per OPD" version="7.0">
+                    <separator string="Target Pada OPD ini sudah di akumulasi, silahkan cek masing-masing target pada tab Realisasi"/>
+                    
+                    <footer>
+                        <div>
+                            <button special="cancel" string="OK" class="oe_highlight"/>
+                        </div>
+                    </footer>
+                 </form>
+            </field>
+      </record>
+ 		 
+       
+	</data>
+</openerp>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<act_window name="Generate Realisasi Perilaku"
+            res_model="project.task.generate" 
+            src_model="project.task"
+            multi="True"
+            view_mode="form"
+            view_type="form"
+            target="new"
+            id="action_project_task_generate" />
+		
+		<menuitem name="Buat Realisasi" id="menu_project_task_generate"  parent="df_project.menu_perilaku"  action="action_project_task_generate" sequence="51"
+			groups="project.group_project_user"/>
+	</data>
+</openerp>

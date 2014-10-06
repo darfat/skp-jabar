@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		<record model="ir.ui.view" id="view_skp_recap_report">
+		    <field name="name">Rekapitulasi SKP (Excel)</field>
+		    <field name="model">skp.recap.report</field>
+		    <field name="type">form</field>
+		    <field name="arch" type="xml">
+			<form string="Rekapitulasi SKP (Excel)" version="7.0">
+				<group>
+					
+					<field name="period_month" class="oe_inline"/>
+					<field name="period_year" class="oe_inline"/>
+					<field name="company_id" />
+					<field name="biro_id" />
+					<field name="is_kepala_opd" />
+				</group>
+				<footer>
+					<div>
+						<button type="object" name="get_skp_recap_report" string="Save Report" icon="terp-gtk-go-back-rtl"/>
+						or
+						<button special="cancel" string="Cancel" class="oe_link"/>
+					</div>
+				</footer>
+			</form>
+		    </field>
+		</record>
+		
+		<record model="ir.actions.act_window" id="action_skp_recap_report">
+		    <field name="name">Rekapitulasi SKP (Excel)</field>
+		    <field name="res_model">skp.recap.report</field>
+		    <field name="type">ir.actions.act_window</field>
+		    <field name="view_type">form</field>
+		    <field name="view_mode">form</field>
+		    <field name="target">new</field>
+		    <field name="view_id" ref="view_skp_recap_report"/>
+		</record>
+		<menuitem id="menu_report_skp" name="Reporting" parent="base.menu_main_pm" sequence="4" groups="base.group_no_one"/>
+	   
+		<menuitem action="action_skp_recap_report"
+		   id="menu_action_skp_recap_report"
+		   parent="df_report_employee_target.menu_skp_rekap_evaluation"  sequence="3"
+			groups="df_project.group_project_evaluated_bkd" 
+		/>
+        </data>
+</openerp>

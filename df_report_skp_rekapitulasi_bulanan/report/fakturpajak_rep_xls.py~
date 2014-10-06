@@ -1,0 +1,263 @@
+# -*- coding: utf-8 -*-
+# Copyright 2010 Thamini S.à.R.L    This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+
+import time
+import xlwt
+from ad_account_optimization.report.report_engine_xls import report_xls
+from ig_faktur_pajak.report.fakturpajak_rep import ReportFakturpajak
+
+import cStringIO
+from xlwt import Workbook, Formula
+from tools.translate import _
+
+
+
+class report_fakturpajak_xls(report_xls):
+    no_ind = 0
+    
+    def get_no_index(self):
+        self.set_no_index()
+        return self.no_ind
+    def set_no_index(self):
+        self.no_ind += 1
+        return True
+    
+    def create_source_xls(self, cr, uid, ids, data, report_xml, context=None):
+        
+        if not context:
+            context = {}
+        context = context.copy()
+        rml_parser = self.parser(cr, uid, self.name2, context=context)
+        objs = self.getObjects(cr, uid, ids, context=context)
+        rml_parser.set_context(objs, data, ids, 'xls')
+
+        n = cStringIO.StringIO()
+        wb = xlwt.Workbook(encoding='utf-8')
+        print "aaaaaaaaaaaaaaaa",rml_parser.localcontext['objects']
+        self.generate_xls_report(rml_parser, data, rml_parser.localcontext['objects'], wb)
+        wb.save(n)
+        n.seek(0)
+
+        return (n.read(), 'xls')
+        
+    def _get_start_date(self, data):
+        if data.get('form', False) and data['form'].get('date', False):
+            return data['form']['date']
+        return ''
+    
+    
+    def _display_start_date(self, parser, data):
+        k = parser.formatLang(data['form']['date'], date=True)
+        if k:
+            k = '%s' % (k)
+        return k
+    
+    def _get_journal(self,data):
+        return '%s' % data['form']['period'][1]
+    
+    
+    def generate_xls_report(self, parser, data, obj, wb):
+        c = parser.localcontext['company']
+        ws = wb.add_sheet(('Faktur Pajak'))
+        ws.panes_frozen = True
+        ws.remove_splits = True
+        ws.portrait = True # Landscape
+        ws.fit_width_to_pages = 1
+        ws.col(1).width = len("ABCDEFG")*1024
+        print "data",data['form']
+        cols_specs = [
+                # Headers data	
+                ('Title',  11, 0, 'text',
+                    lambda x, d, p: ''),
+                ('Kosong', 1, 0, 'text',
+                    lambda x, d, p: ' '),
+                ('Strip', 1, 0, 'text',
+                    lambda x, d, p: '--'),
+		(' ', 1, 0, 'text',
+                    lambda x, d, p: ' '),
+		('Titik2',11,0, 'text',
+		    lambda x, d, p: ':'),
+
+                ('Npwp',4 , 0, 'text',
+                    lambda x, d, p: parser._get_no(x['id'])),
+
+                ('Nama',3, 60, 'text',
+	            lambda x, d, p: parser._get_customer(x['id'])),
+                ('Alamat', 5, 80, 'text',
+                    lambda x, d, p: parser._get_alamat(x['id'])),
+                ('Npwpp',3 , 100, 'text',
+                    lambda x, d, p: parser._get_npwp(x['id'])),
+
+                ('No', 1, 80, 'text',
+ 		   lambda x, d, p: '1'), 
+                ('State', 1, 100, 'text',
+ 		   lambda x, d, p: parser._get_keterangan(x['id'])), 
+
+		('Amount', 2,80 , 'number',
+                    lambda x, d, p: parser._get_amount(x['id'])),
+
+                ('Grand'  , 2, 80, 'number',
+                    lambda x, d, p: x['grand'] or 0.0),
+    
+                ('Ppn'  , 2, 80, 'number',
+                    lambda x, d, p: x['ppn'] or 0.0),  
+
+		('Temp', 2, 0, 'text',
+                    lambda x, d, p: 'Bandung , '),
+                ('Date', 2, 25, 'text',
+                    lambda x, d, p: parser._get_tanggal(x['id'])),
+     
+                                    
+            
+   ]
+
+        row_hdr0 = self.xls_row_template(cols_specs, ['Title'])
+        row_hdr1 = self.xls_row_template(cols_specs, ['Title'])
+        row_hdr2 = self.xls_row_template(cols_specs, ['Title'])
+        row_hdr3 = self.xls_row_template(cols_specs, ['Title'])
+
+        row_1 = self.xls_row_template(cols_specs, ['Npwp'])
+        row_2 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_3 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_4 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_5 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_6 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_7 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_8 = self.xls_row_template(cols_specs, ['Kosong'])
+
+        row_9 = self.xls_row_template(cols_specs, ['Kosong','Kosong','Nama'])
+        row_10 = self.xls_row_template(cols_specs,['Kosong','Kosong','Alamat'])
+        row_11 = self.xls_row_template(cols_specs, ['Kosong','Kosong','Npwpp'])
+
+        row_12 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_13 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_14 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_15 = self.xls_row_template(cols_specs, ['Kosong'])
+
+        row_16 = self.xls_row_template(cols_specs,['No','State','Kosong','Kosong','Kosong','Amount'])
+
+        row_17 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_18 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_19 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_20 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_21 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_22 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_23 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_24 = self.xls_row_template(cols_specs, ['Kosong'])
+        row_25 = self.xls_row_template(cols_specs, ['Kosong'])
+
+
+        row_26 = self.xls_row_template(cols_specs,['Kosong','Kosong','Kosong','Kosong','Kosong','Grand'])
+        row_27 = self.xls_row_template(cols_specs,['Kosong','Kosong','Kosong','Kosong','Kosong','Strip'])
+        row_28 = self.xls_row_template(cols_specs,['Kosong','Kosong','Kosong','Kosong','Kosong','Strip'])
+        row_29 = self.xls_row_template(cols_specs,['Kosong','Kosong','Kosong','Kosong','Kosong','Grand'])
+        row_30 = self.xls_row_template(cols_specs,['Kosong','Kosong','Kosong','Kosong','Kosong','Grand']) 
+	row_31 = self.xls_row_template(cols_specs,['Kosong','Kosong','Kosong','Temp','Date','Kosong'])
+
+
+        hdr_style = xlwt.easyxf('pattern: pattern solid, fore_color gray25;')
+        row_normal_style=  xlwt.easyxf(num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_style = xlwt.easyxf('font: bold on;',num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_top_style = xlwt.easyxf('font: bold on;borders: top thin ;',num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_bottom_style = xlwt.easyxf('font: bold on;borders: bottom thin;',num_format_str='#,##0.00;(#,##0.00)')
+        
+        tittle_style = xlwt.easyxf('font: height 240, name Tahoma Black, colour_index black, bold on,underline on;align: wrap on, vert centre, horiz center; pattern: pattern solid, fore_color white;')
+        subtittle_left_style = xlwt.easyxf('font: height 220,name Tahoma, colour_index black, bold off; align: wrap off, vert centre, horiz right; pattern: pattern solid, fore_color white;', num_format_str='#,##0.00;(#,##0.00)')
+        subtittle_right_style = xlwt.easyxf('font: name Tahoma, colour_index brown, bold on, italic on; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        subtittle_top_and_bottom_style = xlwt.easyxf('font: height 240, name Tahoma, colour_index black, bold off, italic on; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        blank_style = xlwt.easyxf('font: height 650, name Tahoma, colour_index brown, bold off; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        normal_style = xlwt.easyxf('font: height 100, name Tahoma, colour_index black, bold off; align: wrap on, vert centre, horiz left;')
+#        total_style = xlwt.easyxf('font: height 200, name Tahoma, colour_index black, bold off; align: wrap on, vert centre;pattern: pattern solid, fore_color gray25;', num_format_str='#,##0.00;(#,##0.00)')
+        total_style = xlwt.easyxf('font: height 220,  name Tahoma, colour_index black, bold off; align: wrap on, vert centre, horiz left;pattern: pattern solid, fore_color white;', num_format_str='#,##0.00;(#,##0.00)')
+#        total_style1 = xlwt.easyxf('font: height 200, name Tahoma, colour_index black, bold on, italic on; align: wrap on, vert centre, horiz center;;pattern: pattern solid, fore_color gray25;', num_format_str='#,##0.00;(#,##0.00)')
+        total_style1 = xlwt.easyxf('font: height 200, name Tahoma, colour_index black, bold off, italic on; align: wrap on, vert centre;pattern: pattern solid, fore_color white;', num_format_str='#,##0.00;(#,##0.00)')
+
+        ## Style variable End
+
+        # Write headers
+
+        self.xls_write_row(ws, None, data, parser, 0, row_hdr0, tittle_style)
+        self.xls_write_row(ws, None, data, parser, 1, row_hdr1, tittle_style)
+        self.xls_write_row(ws, None, data, parser, 2, row_hdr2, tittle_style)
+        self.xls_write_row(ws, None, data, parser, 3, row_hdr3, tittle_style)
+
+
+        row_count = 4
+        sum = 0.0
+        for dt in parser._get_data_all(data):
+            sum += parser._get_amount(dt['id'])
+            self.xls_write_row(ws, dt, data, parser, row_count, row_1,total_style)
+            row_count+=1     
+        row_count+=1 
+        self.xls_write_row(ws, dt, data, parser, row_count, row_2, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_3, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_4, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_5, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_6, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_7, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_8, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_9, total_style)
+        row_count+=1
+ 	self.xls_write_row(ws, dt, data, parser, row_count, row_10, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_11, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_12, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_13, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_14, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_15, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_16, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_17, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_18, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_19, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_20, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_21, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_22, total_style)
+        row_count+=1
+ 	self.xls_write_row(ws, dt, data, parser, row_count, row_23, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_24, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_25, total_style)
+        row_count+=1
+	self.xls_write_row(ws, {'grand':sum}, data, parser, row_count, row_26, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_27, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_28, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, {'grand':sum}, data, parser, row_count, row_29, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, {'grand':(sum * 0.10)}, data, parser, row_count, row_30, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_31, subtittle_left_style)
+        pass
+#     print "asdaa"
+from netsvc import Service
+del Service._services['report.fakturpajak.lap.xls']
+report_fakturpajak_xls(
+        'report.fakturpajak.lap.xls',
+        'lap.fakturpajak',
+        'addons/ig_faktur_pajak/report/fakturpajak_rep.mako',
+        parser=ReportFakturpajak,
+        header=True)
+
+

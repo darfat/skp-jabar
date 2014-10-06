@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+	<!-- =========================================  kegiatan.pemprov Tree =============================================== -->
+
+		<record id="view_project_data_kegiatatree" model="ir.ui.view">
+            <field name="name">kegiatan.pemprov.tree</field>
+            <field name="model">kegiatan.pemprov</field>
+            <field name="arch" type="xml">
+                <tree string="Data Kegiatan">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="target_category" />
+                    <field name="target_type_id"/>
+                    <field name="period_month" attrs="{'invisible':[('target_category','!=','bulanan')],'required':[('target_category','=','bulanan')]}"/>
+                    <field name="period_year"/>
+                    <field name="control_biaya"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        
+ 		 <record id="view_project_data_kegiata_form" model="ir.ui.view">
+            <field name="name">kegiatan.pemprov.form</field>
+            <field name="model">kegiatan.pemprov</field>
+            <field name="arch" type="xml">
+                <form string="Satuan Hitung" version="7.0">
+                    <group col="2">
+                        <field name="code"/>
+	                    <field name="name"/>
+	                     <field name="target_category" />
+	                    <field name="target_type_id"/>
+	                    <field name="period_month" attrs="{'invisible':[('target_category','!=','bulanan')],'required':[('target_category','=','bulanan')]}"/>
+	                    <field name="period_year"/>
+	                    <field name="control_biaya"/>
+	                    <field name="description"/>
+	                    <field name="active"/>
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		
+		 <record model="ir.actions.act_window" id="action_project_data_kegiatan">
+            <field name="name">Data Kegiatan</field>
+            <field name="res_model">kegiatan.pemprov</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="base.menu_definitions" id="menu_project_data_kegiatan" action="action_project_data_kegiatan" sequence="0"/>	
+	<!-- =========================================  Satuan Hitung Tree =============================================== -->
+
+		<record id="view_project_satuan_hitung_tree" model="ir.ui.view">
+            <field name="name">satuan.hitung.tree</field>
+            <field name="model">satuan.hitung</field>
+            <field name="arch" type="xml">
+                <tree string="Satuan Hitung">
+                    <field name="name"/>
+                    <field name="type"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        
+ 		 <record id="view_project_satuan_hitung_form" model="ir.ui.view">
+            <field name="name">satuan.hitung.form</field>
+            <field name="model">satuan.hitung</field>
+            <field name="arch" type="xml">
+                <form string="Satuan Hitung" version="7.0">
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="type"/>
+                        <field name="active"/>
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		
+		 <record model="ir.actions.act_window" id="action_project_satuan_hitung">
+            <field name="name">Jenis Satuan Hitung</field>
+            <field name="res_model">satuan.hitung</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!--<field name="search_view_id" ref="view_job_filter"/>
+            <field name="context">{"search_default_Current":1}</field>-->
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="base.menu_definitions" id="menu_project_satuan_hitung" action="action_project_satuan_hitung" sequence="4"/>	
+	
+		<!-- =========================================  config_skp Tree =============================================== -->
+
+		<record id="view_config_skp_tree" model="ir.ui.view">
+            <field name="name">config.skp.tree</field>
+            <field name="model">config.skp</field>
+            <field name="arch" type="xml">
+                <tree string="Konfigurasi Umum">
+                    	<field name="code"/>
+						<field name="type"/>						
+						<field name="name"/>
+                        <field name="config_value_int"/>
+                        <field name="config_value_float"/>
+                        <field name="config_value_string"/>
+                        <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        
+ 		 <record id="view_config_skp_form" model="ir.ui.view">
+            <field name="name">config.skp.form</field>
+            <field name="model">config.skp</field>
+            <field name="arch" type="xml">
+                <form string="Konfigurasi Umum" version="7.0">
+                    <group col="4">
+                        <field name="code"/>
+						<field name="type"/>						
+						<field name="name"/>
+                        <field name="config_value_int"/>
+                        <field name="config_value_float"/>
+                        <field name="config_value_string"/>
+                        <field name="active"/>
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		
+		 <record model="ir.actions.act_window" id="action_config_skp">
+            <field name="name">Konfigurasi Umum</field>
+            <field name="res_model">config.skp</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!--<field name="search_view_id" ref="view_job_filter"/>
+            <field name="context">{"search_default_Current":1}</field>-->
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="base.menu_definitions" id="menu_config_skp" action="action_config_skp" sequence="8"/>	
+	
+<!-- =========================================  config_skp Tree =============================================== -->
+
+		<record id="view_acuan_nilai_skp_tree" model="ir.ui.view">
+            <field name="name">acuan.penailaian.tree</field>
+            <field name="model">acuan.penailaian</field>
+            <field name="arch" type="xml">
+                <tree string="Acuan Penilaian SKP">
+                    	<field name="name"/>
+                        <field name="type"/>
+                        <field name="kategori_integritas"/>
+                        <field name="nilai_tunggal"/>
+                        <field name="nilai_tambahan"/>
+                        <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        
+ 		 <record id="view_acuan_nilai_skp_form" model="ir.ui.view">
+            <field name="name">acuan.penailaian.form</field>
+            <field name="model">acuan.penailaian</field>
+            <field name="arch" type="xml">
+                <form string="Acuan Penilaian SKP" version="7.0">
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="type"/>
+                        <field name="kategori_integritas"/>
+                        <field name="kategori_kerjasama"/>
+                        <field name="kategori_kepemimpinan"/>
+                        <field name="kategori_kreatifitas"/>
+                        <field name="kategori_orientasi"/>
+                        <field name="nilai_tunggal"/>
+                        <field name="nilai_tambahan"/>
+                        <field name="kategori_nilai"/>
+                        <field name="nilai_atas"/>
+                        <field name="nilai_bawah"/>
+                        <field name="active"/>
+                        
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		
+		 <record model="ir.actions.act_window" id="action_acuan_nilai_skp">
+            <field name="name">Acuan Penilaian SKP</field>
+            <field name="res_model">acuan.penailaian</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!--<field name="search_view_id" ref="view_job_filter"/>
+            <field name="context">{"search_default_Current":1}</field>-->
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="base.menu_definitions" id="menu_acuan_nilai_skp" action="action_acuan_nilai_skp" sequence="9"/>	
+	
+
+
+		<!-- ========================================= Jenis Kegiatan Tree =============================================== -->
+
+		<record id="view_project_task_type_tree" model="ir.ui.view">
+            <field name="name">project.type.tree</field>
+            <field name="model">project.type</field>
+            <field name="arch" type="xml">
+                <tree string="Jenis Kegiatan">
+					<field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <!-- ========================================= Jenis Kegiatan Form =============================================== -->
+ 		 <record id="view_project_task_type_form" model="ir.ui.view">
+            <field name="name">project.type.form</field>
+            <field name="model">project.type</field>
+            <field name="arch" type="xml">
+                <form string="Jenis Kegiatan" version="7.0">
+                    <group col="2">
+                        <field name="code"/>
+                        <field name="name"/>
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		<!-- ========================================= Jenis Kegiatan Menu =============================================== -->
+		 <record model="ir.actions.act_window" id="action_project_task_type">
+            <field name="name">Jenis Kegiatan</field>
+            <field name="res_model">project.type</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!--<field name="search_view_id" ref="view_job_filter"/>
+            <field name="context">{"search_default_Current":1}</field>-->
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<!--<menuitem parent="base.menu_project_config_project" id="menu_project_task_type" action="action_project_task_type" sequence="5"/>-->	
+	
+		<!-- Lookup nilai default perilaku : Komitmen -->
+		
+		<record id="view_project_default_hari_kerja_tree" model="ir.ui.view">
+            <field name="name">hari.kerja.bulanan.tree</field>
+            <field name="model">hari.kerja.bulanan</field>
+            <field name="arch" type="xml">
+                <tree string="Jumlah Kerja Bulanan">
+                    <field name="target_period_year"/>
+                    <field name="target_period_month"/>
+                    <field name="jumlah_apel_pagi" />
+                    <field name="jumlah_hari_kerja" />
+                    <field name="jumlah_jam_kerja"/>
+                    <field name="jumlah_upacara_hari_besar"/>
+                </tree>
+            </field>
+        </record>
+        
+ 		 <record id="view_project_default_hari_kerja_form" model="ir.ui.view">
+            <field name="name">hari.kerja.bulanan.form</field>
+            <field name="model">hari.kerja.bulanan</field>
+            <field name="arch" type="xml">
+                <form string="Jumlah Kerja Bulanan" version="7.0">
+                    <group col="2">
+                     <field name="target_period_year"/>
+                    <field name="target_period_month"/>
+                    <field name="jumlah_apel_pagi" />
+                    <field name="jumlah_hari_kerja" />
+                    <field name="jumlah_jam_kerja"/>
+                    <field name="jumlah_upacara_hari_besar"/>
+					<field name="notes"/>
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		
+		 <record model="ir.actions.act_window" id="action_project_default_hari_kerja">
+            <field name="name">Inisiasi Hari Kerja</field>
+            <field name="res_model">hari.kerja.bulanan</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="base.menu_definitions" id="menu_project_default_hari_kerja" action="action_project_default_hari_kerja" sequence="1"/>
+		
+<!-- Lookup nilai default perilaku : Untuk Verifikasi Absensi Pegawai -->
+		
+		<record id="view_project_verifikasi_absen_pegawai_tree" model="ir.ui.view">
+            <field name="name">verifikasi.absen.pegawai.tree</field>
+            <field name="model">verifikasi.absen.pegawai</field>
+            <field name="arch" type="xml">
+                <tree string="Data Absensi Pegawai">
+                    <field name="target_period_year"/>
+                    <field name="target_period_month"/>
+                    <field name="employee_id" />
+                    <field name="nip" />
+                    <field name="jumlah_apel_pagi" />
+                    <field name="jumlah_hari_kerja" />
+                    <field name="jumlah_jam_kerja"/>
+                    <field name="jumlah_upacara_hari_besar"/>
+                </tree>
+            </field>
+        </record>
+        
+ 		 <record id="view_project_verifikasi_absen_pegawai_form" model="ir.ui.view">
+            <field name="name">verifikasi.absen.pegawai.form</field>
+            <field name="model">verifikasi.absen.pegawai</field>
+            <field name="arch" type="xml">
+                <form string="Upload Data Absensi" version="7.0">
+                    <group col="2">
+                    <field name="target_period_year"/>
+                    <field name="target_period_month"/>
+                    <field name="employee_id" />
+                    <field name="jumlah_apel_pagi" />
+                    <field name="jumlah_hari_kerja" />
+                    <field name="jumlah_jam_kerja"/>
+                    <field name="jumlah_upacara_hari_besar"/>
+                    <field name="notes"/>
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		
+		 <record model="ir.actions.act_window" id="action_project_verifikasi_absen_pegawai">
+            <field name="name">Absensi Pegawai</field>
+            <field name="res_model">verifikasi.absen.pegawai</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="base.menu_definitions" id="menu_project_verifikasi_absen_pegawai" action="action_project_verifikasi_absen_pegawai" sequence="2"/>
+	</data>
+</openerp>

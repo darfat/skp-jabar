@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>	
+		<!-- ========================================= Realisasi Perilaku Tree =============================================== -->
+
+		<record id="view_menu_realisasi_perilaku_tree" model="ir.ui.view">
+            <field name="name">project.task.tree</field>
+            <field name="model">project.task</field>
+            <field name="arch" type="xml">
+                <tree create="false" delete="false" string="Realisasi Perilaku Dan Tugas Tambahan"  colors="grey:work_state in ('done','closed','cancelled');blue:work_state in ('rejected_bkd','rejected_manager');brown:work_state == 'propose';orange:work_state == 'appeal';green:work_state == 'realisasi';">
+					<field name="name" string="Nama Kegiatan"/>
+					<field name="target_type_id"/>
+                    <field name="target_period_month"/>
+            		<field name="target_period_year"/>   
+            		<field name="nilai_sementara"   
+            				groups="df_project.group_project_evaluated_bkd"  />
+					<field name="nilai_akhir" 
+							attrs="{'invisible': [('work_state','!=','done')]}"/>
+                    <field name="user_id" string="Penanggung Jawab"/>
+				    <field name="company_id" groups="df_project.group_project_evaluated_bkd" string="OPD"/>
+					<field name="work_state"/>
+                    
+            		<field name="user_id_atasan" invisible="True"/>
+            		<field name="user_id_banding" invisible="True"/>
+            		<field name="task_category" invisible="True" />
+                </tree>
+            </field>
+        </record>
+        <!-- =========================================  Realisasi Form =============================================== -->
+ 		 <record id="view_menu_realisasi_perilaku_form" model="ir.ui.view">
+            <field name="name">project.task.form</field>
+            <field name="model">project.task</field>
+            <field name="arch" type="xml">
+                <form create="false" delete="false" string="Realisasi Bulanan" version="7.0">
+               		<header> 
+
+					<button name="action_target_done" string="Realisasi Siap Diisikan" type="object" confirm="Apakah Anda Yakin Sudah Mengisi Data Kegiatan Dengan Benar ?"
+                        groups="project.group_project_user"   attrs="{'invisible':[('work_state','!=', 'draft')]}"  />
+                      <button name="action_realisasi" string="Ajukan Ke Atasan" type="object" confirm="Apakah Anda Yakin Sudah Mengisi Kegiatan Dengan Benar ?"
+                        groups="project.group_project_user"  attrs="{'invisible':[('work_state','!=', 'realisasi')]}" />
+                      <button name="delete_realisasi"  string="Realisasi Dibatalkan" type="object"  confirm="Apakah Anda Yakin  ?"
+                      attrs="{'invisible':[('work_state','not in',('draft','realisasi'))]}" groups="project.group_project_user"/>
+                      <button name="action_appeal" string="Ajukan Banding" type="object"  confirm="Apakah Anda Yakin ?"
+                        groups="project.group_project_user"  attrs="{'invisible':[('work_state','!=', 'rejected_manager')]}" />
+                      <button name="action_dont_appeal" string="Koreksi Atasan Diterima" type="object"  confirm="Apakah Anda Yakin  ?"
+                        groups="project.group_project_user"  attrs="{'invisible':[('work_state','!=', 'rejected_manager')]}" />
+                      
+                      <button name="action_propose" string="Ajukan Ke BKD" type="object" confirm="Apakah Anda Yakin Data Sudah Sesuai Dan Siap DiLaporkan ?"
+                        groups="project.group_project_manager"  attrs="{'invisible':[('work_state','!=', 'propose')]}" />
+                      <button name="action_propose_rejected_popup" string="Pengajuan Ditolak" type="object"
+                        groups="project.group_project_manager"  attrs="{'invisible':[('work_state','!=', 'propose')]}" />
+                      <button name="action_accept_verificate" string="Ajukan Sesuai Realisasi" type="object" confirm="Apakah Anda Yakin Sudah Mengisi Kegiatan Dengan Benar ?"
+                        groups="project.group_project_manager"   attrs="{'invisible':[('work_state','!=', 'rejected_bkd')]}" />
+                      <button name="action_reject_verificate" string="Ajukan Sesuai Koreksi Penilaian" type="object" confirm="Apakah Anda Yakin Sudah Mengisi Kegiatan Dengan Benar ?"
+                        groups="project.group_project_manager"   attrs="{'invisible':[('work_state','!=', 'rejected_bkd')]}" />
+                      
+					  <button name="action_appeal_approve" string="Banding Diterima" type="object" confirm="Apakah Anda Yakin Sudah Mengisi Kegiatan Dengan Benar ?"
+                        groups="df_project.group_project_appeal"  attrs="{'invisible':[('work_state','!=', 'appeal')]}"  />
+                      <button name="action_appeal_reject_popup" string="Banding Ditolak" type="object"
+                        groups="df_project.group_project_appeal"  attrs="{'invisible':[('work_state','!=', 'appeal')]}"  />
+                	  
+					<button name="action_work_done" string="Selesai" type="object"
+                        groups="df_project.group_project_evaluated_bkd"  attrs="{'invisible':[('work_state','!=', 'evaluated')]}"  />  
+					<button name="action_work_rejected_popup" string="Tolak" type="object"
+                        groups="df_project.group_project_evaluated_bkd"  attrs="{'invisible':[('work_state','!=', 'evaluated')]}"  />
+					<button name="action_work_done_use_target" string="Selesai Dan Hitung Menggunakan Target" type="object"
+                        groups="df_project.group_project_evaluated_bkd"  attrs="{'invisible':[('work_state','!=', 'evaluated')]}"  /> 
+					<button name="do_recalculate_poin" string="Hitung Ulang" type="object" confirm="Apakah Anda Yakin Akan Menghitung Ulang?"
+                        groups="df_project.group_project_evaluated_bkd"  attrs="{'invisible':[('work_state','!=', 'done')]}"   />
+					
+					<field name="work_state" widget="statusbar"  readonly="1" statusbar_visible="realisasi,propose,appeal,evaluated,done"/>
+					</header>
+	                <sheet string="Realisasi Perilaku Dan Tugas Tambahan">
+	                	<div class="oe_title"> 
+							<label for="name" class="oe_edit_only" string="Nama Kegiatan"/>
+							<h1>
+								<field name="name" placeholder="Isi Nama Kegiatan Disini...."  required="True"  attrs="{'readonly':[('work_state','not in', ('draft','realisasi'))]}" />
+							</h1>
+							<field name="code" placeholder="Isi Kode Kegiatan Jika Ada..." readonly="True"/>
+						</div>
+						<group col="2" >
+	                      <div class="oe_right">
+	                      	        <ul>
+		                      	        <div  attrs="{'invisible':[('is_suggest','=', False)]}" style="font-size:12px;" >
+											<li>Terdapat Koreksi Dari Pejabat Penilai </li>
+		                	 			</div>
+		                				<div  attrs="{'invisible':[('is_appeal','=', False)]}"   style="font-size:12px;" >
+											<li>Terdapat Koreksi Dari Atasan Pejabat Penilai</li> 
+		                	 			</div>
+		                	 			<div  attrs="{'invisible':[('is_control','=', False)]}"  style="font-size:12px;" >
+											<li>Terdapat Koreksi Dari Tim Verifikasi</li> 
+	                	 				</div>
+	                	 			</ul>
+						 </div>  
+					 </group> 
+						<div class="oe_right">
+									<label for="user_id" class="oe_edit_only" string="Penanggung Jawab :"/>
+							<h3> 
+									<field name="user_id" string="Penanggung Jawab" attrs="{'readonly':[('work_state','not in',['new', 'draft'])]}"/> 
+							</h3>	
+						</div>
+						<group col="2" attrs="{'invisible':[('work_state','not in',('done'))]}"   style="background:#244646;color:#ebf4a3">
+		                	 <div class="oe_left">
+		                	  <!--<h3> <field name="indeks_nilai" attrs="{'invisible':[('work_state','not in',('done')),('target_type_id',' in',('tambahan','perilaku'))]}" /></h3>-->	 
+							<h3> Nilai : </h3>
+		                	 </div>
+		                		 
+		                	 <div class="oe_right">
+							 		<h3> <field name="nilai_akhir" attrs="{'invisible':[('work_state','not in',('done'))]}" /></h3>	
+							 </div>
+						</group >
+						
+	                    <group col="2">
+	                        <field name="target_type_id" readonly="True"  />
+							<field name="target_period_month" readonly="True"/>
+							<field name="target_period_year" readonly="True"/>
+	                		<field name='notes'/>
+	                		<field name="task_category" invisible="True" />
+	                		<field name="target_category" invisible="True"/>
+						</group>
+						
+					<notebook> 
+							  
+							<page string="Target Dan Realisasi" name="target_realisasi" >
+								<group  col="1">
+										<group col="2">
+										<!-- ==== UNTUK PERILAKU DAN TAMBAHAN ==== -->                        
+											<div attrs="{'invisible': [('task_category','=','skp')]}"> 
+																<div attrs="{'invisible': [('target_type_id','!=','perilaku')]}"> 
+																			<div >
+													                        	 	<h2>Data Verifikasi Dan Inisiasi</h2>
+													                        </div>
+												 							<div  >
+													                        	 	<h3>::. Data Verifikasi</h3>
+													                         </div>
+													                         <group col="4">
+													                         		<field name="lookup_apel_pagi" invisible="True"/>
+													                         		<field name="lookup_upacara_hari_besar" invisible="True"/>   	  
+																					<field name="lookup_jumlah_hari_kerja" />   	
+																					<field name="lookup_jumlah_jam_kerja" />
+																					 	   								                         
+													                         </group>
+													                         <div>
+			 																	<button name="fill_lookup_perilaku_komitmen" string="Lookup Data Verifikasi" type="object" groups="project.group_project_user"  
+			 																	help="Tekan Tombol Ini Untuk Melihat Data Verifikasi Pegawai Yang Sudah Diinput dari data SIMPEG" />
+													                         </div>
+													                         <hr />
+													                         
+																			 <div  >
+													                        	 	<h3>::. Data Inisiasi  </h3>
+													                         </div>
+													                         <group col="4">
+													                         		<field name="realisasi_apel_pagi" readonly="True"/>   
+																					<field name="realisasi_upacara_hari_besar" readonly="True"/>  														
+																					<field name="realisasi_jumlah_hari_kerja" readonly="True"/>
+																					<field name="realisasi_jumlah_jam_kerja" readonly="True"/>	
+																	  	
+																					<field name="employee_job_type" invisible="True"/>
+																					<field name="is_kepala_opd" invisible="True"/>      								                         
+													                         </group>
+													                         <div><button name="fill_lookup_inisiasi_perilaku_komitmen" string="Lookup Data Inisiasi" type="object" groups="project.group_project_user,df_project.group_project_evaluated_bkd"  
+			 																	help="Tekan Tombol Ini Untuk Melihat Data Inisiasi Bulanan Yang Sudah Diinput dari data SIMPEG" /></div>
+													                        <hr />
+													                        
+													                    
+													          </div>
+												 <group col="3">
+				                            		<div  attrs="{'invisible': [('task_category','=','skp')]}">
+														<group string='Realisasi'  attrs="{'invisible': [('work_state','in',('draft'))]}" >
+															<div name="tambahan_realisasi"  attrs="{'invisible': [('target_type_id','!=','tambahan')]}" >
+								                        		 <div style="background:#19bb9b" >
+															     	<h3>Tugas Tambahan</h3>
+															     </div>	
+																 <group col="2">
+											                         		<field name="realisasi_tugas_tambahan"
+											                         		 attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))],'required':[('work_state','in', ('realisasi','evaluated')),('target_type_id','=','tambahan')] }"/>
+											                         		<field name="realisasi_uraian_tugas_tambahan" attrs="{'readonly':[('work_state','!=', 'realisasi')]}"/> 
+								                        		</group>
+								                        		 <div  >
+															     	<h4>Ruang Lingkup Tugas Tambahan :</h4>
+															     </div>	
+								                        		<group col="6">
+																		    <field name="realisasi_rl_opd_tugas_tambahan" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+											                         		<field name="realisasi_rl_gubernur_tugas_tambahan" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/> 
+																			<field name="realisasi_rl_presiden_tugas_tambahan" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+																</group>
+																<group col="2">
+																			<field name="realisasi_attach_tugas_tambahan" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+																</group>
+								                        		 <div style="background:#19bb9b" >
+															     	<h3>Kreatifitas</h3>
+																 </div>	
+																 <group col="2">
+											                         		
+																			<field name="realisasi_nilai_kreatifitas"   
+																			  	attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))],'required':[('work_state','in', ('realisasi','evaluated')),('target_type_id','=','tambahan')] }" />       
+																			<field name="realisasi_uraian_kreatifitas" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/> 
+																			<field name="realisasi_tupoksi_kreatifitas" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+																</group>
+																<div  >
+															     	<h4>Ruang Lingkup Kreatifitas : </h4>
+															     </div>
+								                        		<group col="6">
+																		    <field name="realisasi_rl_opd_kreatifitas" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+											                         		<field name="realisasi_rl_gubernur_kreatifitas" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/> 
+																			<field name="realisasi_rl_presiden_kreatifitas" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+																</group>
+																<group col="2">
+																			<field name="realisasi_attach_kreatifitas" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+																</group>
+							                    			</div>
+							                    			
+							                    			<div name="perilaku_kerja_realisasi"  attrs="{'invisible': [('target_type_id','!=','perilaku')]}" >
+										                    	<group>
+										                    		<div>
+													                        <div style="background:#19bb9b" >
+													                        	<h3>Orientasi Pelayanan</h3>
+													                       	</div>
+																			<group col="2" >
+																				 <group>
+																						<field name="realisasi_jumlah_konsumen_pelayanan" string="Jumlah Pelayanan" 
+																							attrs="{ 'readonly':[('work_state','not in', ('realisasi','evaluated'))],'required':[('work_state','in', ('realisasi','evaluated')),('target_type_id','=','perilaku')] }"  /> 
+																						<field name="realisasi_satuan_jumlah_konsumen_pelayanan" 
+																							attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))],'required':[('work_state','in', ('realisasi','evaluated')),('target_type_id','=','perilaku')]  }" />    
+														                         		<field name="realisasi_jumlah_tidakpuas_pelayanan" 
+														                         		 	attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))] ,'required':[('work_state','in', ('realisasi','evaluated')),('target_type_id','=','perilaku')] }"/> 
+														                         </group>
+																				 <group attrs="{'invisible': [('is_kepala_opd','=',False)]}" >
+																								<field name="realisasi_ketepatan_laporan_spj" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/> 
+																								<field name="realisasi_ketepatan_laporan_ukp4" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>       
+																                         		<field name="realisasi_efisiensi_biaya_operasional" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/> 
+														                         </group>
+													                        </group>
+													                        <div style="background:#19bb9b" >
+													                        	 	<h3>Integritas</h3>
+													                        </div>	
+																			<div style="background:#8addf6" >
+													                        	 	<h5>Hukuman Disiplin</h5>
+													                        </div>	
+																			<group col="2">
+																							<field name="realisasi_integritas_hukuman" 
+																							attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))],'required':[('work_state','in', ('realisasi','evaluated')),('target_type_id','=','perilaku')]}" />
+																							<field name="realisasi_integritas_hukuman_ringan" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))],'invisible':[('realisasi_integritas_hukuman','=', 'tidak')]}"/>    
+																							<field name="realisasi_integritas_hukuman_sedang" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))],'invisible':[('realisasi_integritas_hukuman','=',  'tidak')]}"/>
+																							<field name="realisasi_integritas_hukuman_berat" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))],'invisible':[('realisasi_integritas_hukuman','=',  'tidak')]}"/>                                	
+																							  
+															                </group>
+																			<div style="background:#8addf6" >
+													                        	 	<h5>Penghargaan</h5>
+													                        </div>	
+													                        <group col="4">
+													                        	 		<group col="2">
+																							<field name="realisasi_integritas_presiden" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>                        	
+																							<field name="realisasi_integritas_gubernur" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+																							<field name="realisasi_integritas_kepalaopd" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/> 
+																							<field name="realisasi_integritas_atasan" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>  
+															                        	</group>       
+																						<group col="2">
+																							<field name="realisasi_integritas_es1" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>  
+																							<field name="realisasi_integritas_es2" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>   
+																							<field name="realisasi_integritas_es3" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}" invisible="True" />     
+															                       			<field name="realisasi_integritas_es4" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}" invisible="True"  />																
+																						</group>                            	
+													                        </group>
+													                         <div style="background:#19bb9b" >
+													                        	 	<h3>Komitmen</h3>
+													                         </div>
+													                         <group col="2">
+													                         			<div>
+																						<group col="4">		
+																						    <field name="realisasi_hadir_apel_pagi" 
+																						    attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))],'required':[('work_state','in', ('realisasi','evaluated')),('target_type_id','=','perilaku')]}" />		
+																							<field name="realisasi_hadir_upacara_hari_besar" 
+																							attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))],'required':[('work_state','in', ('realisasi','evaluated')),('target_type_id','=','perilaku')]} "/> 
+														                         		</group>	 
+																						</div>                             	
+													                        </group>
+													                        <div style="background:#19bb9b" >
+													                        	 	<h3>Disiplin</h3>
+													                         </div>
+													                         <group col="2">
+													                         			<div>
+																						<group col="4">		
+																						    <field name="realisasi_hadir_hari_kerja" 
+																						    attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))] ,'required':[('work_state','in', ('realisasi','evaluated')),('target_type_id','=','perilaku')] }" />  
+															                         		<field name="realisasi_hadir_jam_kerja" 
+															                         		attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))] ,'required':[('work_state','in', ('realisasi','evaluated')),('target_type_id','=','perilaku')]}"/>
+															                         	</group>	 
+																						</div>                             	
+													                        </group>
+													                        <div style="background:#19bb9b" >
+													                        	 	<h3>Kerjasama</h3>
+													                         </div>
+													                        
+																			<group col="4">
+													                             		<group col="2">
+																							<field name="realisasi_kerjasama_nasional" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>                            	
+															                         		<field name="realisasi_kerjasama_gubernur" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+															                         		<field name="realisasi_kerjasama_kepalaopd" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>     
+																							<field name="realisasi_kerjasama_atasan" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+														                       			</group>
+														                       			<group col="2">                             	
+															                        		<field name="realisasi_kerjasama_rapat_nasional" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>         
+															                         		<field name="realisasi_kerjasama_rapat_provinsi" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+																							<field name="realisasi_kerjasama_rapat_perangkat_daerah" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>     
+															                       			<field name="realisasi_kerjasama_rapat_atasan" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>                                 	
+														                        		</group>            	
+													                        </group>
+													                          <div style="background:#19bb9b" attrs="{'invisible':[('employee_job_type','!=', 'struktural')]}"  >
+													                        	 	<h3>Kepemimpinan</h3>
+													                         </div>
+													                        <group col="4" attrs="{'invisible':[('employee_job_type','!=', 'struktural')]}" >
+													                        	 <div>
+													                        	 		<group col="2">
+																							<field name="realisasi_kepemimpinan_nasional" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>                            	
+																							<field name="realisasi_kepemimpinan_gubernur" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>                          	
+																							<field name="realisasi_kepemimpinan_kepalaopd" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/> 
+																							<field name="realisasi_kepemimpinan_atasan" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>                                 	
+														                       			</group>
+											                        					<group col="2">
+											                        						<field name="realisasi_kepemimpinan_narsum_nasional" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>                             	
+																							<field name="realisasi_kepemimpinan_narsum_provinsi" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>
+															                        		<field name="realisasi_kepemimpinan_narsum_perangkat_daerah" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>      
+															                       			<field name="realisasi_kepemimpinan_narsum_unitkerja" attrs="{'readonly':[('work_state','not in', ('realisasi','evaluated'))]}"/>                              	
+														                        		</group>                    	
+														                        </div>
+													                        </group>
+												                      </div>
+												                   </group>
+										                        </div>
+									                   		</group> <!-- END GROUP Realiasasi   -->  
+											  			</div><!-- END DIV Realisasi   -->
+			<!-- DIV SUGGEST -->	
+			
+														<div attrs="{'invisible': [('is_suggest','=',False)]}">
+															<group string='Usulan Atasan' attrs="{'invisible': [('is_suggest','=',False)]}"  >
+																<div name="tambahan_suggest"  attrs="{'invisible': [('target_type_id','!=','tambahan')]}" >
+																	<div style="background:#19bb9b" >
+															                        	<h3>Tugas Tambahan</h3>
+															        </div>
+																        <group col="2">
+												                         		<field name="suggest_tugas_tambahan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))],'required':[('target_type_id','in',('tambahan')),('is_suggest','=',True)]}"/>       
+												                         		<field name="suggest_uraian_tugas_tambahan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+										                        		</group>
+										                        		<group col="6">
+																				    <field name="suggest_rl_opd_tugas_tambahan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+													                         		<field name="suggest_rl_gubernur_tugas_tambahan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+																					<field name="suggest_rl_presiden_tugas_tambahan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+																		</group>
+																		
+									                        		 <div style="background:#19bb9b" >
+																     	<h3>Kreatifitas</h3>
+																	 </div>	
+																		 <group col="2">
+													                         		
+																					<field name="suggest_nilai_kreatifitas" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))],'required':[('target_type_id','in',('tambahan')),('is_suggest','=',True)]}"/>             
+																					<field name="suggest_uraian_kreatifitas" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+																					<field name="suggest_tupoksi_kreatifitas" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+																		</group>
+										                        		<group col="6">
+																				    <field name="suggest_rl_opd_kreatifitas" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+													                         		<field name="suggest_rl_gubernur_kreatifitas" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+																					<field name="suggest_rl_presiden_kreatifitas" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+																		</group>
+																</div>
+											                     
+										                        <div name="perilaku_kerja_suggest"  attrs="{'invisible': [('target_type_id','!=','perilaku')]}" >
+											                        <group>
+												                    		<div>
+															                        <div style="background:#19bb9b" >
+															                        	<h3>Orientasi Pelayanan</h3>
+															                       	</div>
+																					<group col="2" >
+																						 <group>
+																								<field name="suggest_jumlah_konsumen_pelayanan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/> 
+																								<field name="suggest_satuan_jumlah_konsumen_pelayanan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+																                         		<field name="suggest_jumlah_tidakpuas_pelayanan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/> 
+																                         </group>
+																                         <group attrs="{'invisible': [('is_kepala_opd','=',False)]}" >
+																								<field name="suggest_ketepatan_laporan_spj" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/> 
+																								<field name="suggest_ketepatan_laporan_ukp4" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>       
+																                         		<field name="suggest_efisiensi_biaya_operasional" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/> 
+														                         		</group>
+															                        </group>
+															                    
+															                        <div style="background:#19bb9b" >
+															                        	 	<h3>Integritas</h3>
+															                        </div>	
+															                        <div style="background:#8addf6" >
+													                        	 	<h5>Hukuman Disiplin</h5>
+													                        </div>	
+																			<group col="2">
+																							<field name="suggest_integritas_hukuman" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>
+																							<field name="suggest_integritas_hukuman_ringan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))],'invisible':[('suggest_integritas_hukuman','=', 'tidak')]}"/>    
+																							<field name="suggest_integritas_hukuman_sedang" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))],'invisible':[('suggest_integritas_hukuman','=', 'tidak')]}"/>
+																							<field name="suggest_integritas_hukuman_berat" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))],'invisible':[('suggest_integritas_hukuman','=', 'tidak')]}"/>                                	
+																							  
+															                </group>
+																			<div style="background:#8addf6" >
+													                        	 	<h5>Penghargaan</h5>
+													                        </div>	
+													                        		<group col="4">
+															                        	 		<group col="2">
+																									<field name="suggest_integritas_presiden" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>                        	
+																									<field name="suggest_integritas_gubernur" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>
+																									<field name="suggest_integritas_kepalaopd" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/> 
+																									<field name="suggest_integritas_atasan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>  
+																	                        	</group>       
+																								<group col="2">
+																									<field name="suggest_integritas_es1" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>  
+																									<field name="suggest_integritas_es2" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>   
+																									<field name="suggest_integritas_es3" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}" invisible="True" />     
+																	                       			<field name="suggest_integritas_es4" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}" invisible="True" />																
+																								</group>                            	
+															                        </group>
+															                         <div style="background:#19bb9b" >
+															                        	 	<h3>Komitmen</h3>
+															                         </div>
+															                         <group col="2">
+																								<div invisible="True" >
+															                         			<group col="2">										                         									
+																	                         		<field name="suggest_apel_pagi" invisible="True" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}" />   
+																									<field name="suggest_upacara_hari_besar" invisible="True"  attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/> 
+																								</group>
+																								</div>
+																								<div>
+																								<group col="4">		
+																								    <field name="suggest_hadir_apel_pagi" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>		
+																									<field name="suggest_hadir_upacara_hari_besar" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>
+																                         		</group>	 
+																								</div>   
+															                        </group>
+															                         <div style="background:#19bb9b" >
+															                        	 	<h3>Disiplin</h3>
+															                         </div>
+															                         <group col="2">
+																								<div invisible="True" >
+															                         			<group col="2">										                         									
+																	                         		<field name="suggest_jumlah_hari_kerja" invisible="True" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>
+																									<field name="suggest_jumlah_jam_kerja" invisible="True" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>
+																									 
+																								</group>
+																								</div>
+																								<div>
+																								<group col="4">		
+																								    <field name="suggest_hadir_hari_kerja" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>  
+																	                         		<field name="suggest_hadir_jam_kerja" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>
+																                         		</group>	 
+																								</div>   
+															                        </group>
+															                        <div style="background:#19bb9b" >
+															                        	 	<h3>Kerjasama</h3>
+															                         </div>
+															                        
+																					<group col="4">
+															                             		<group col="2">
+																									<field name="suggest_kerjasama_nasional" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>                            	
+																	                         		<field name="suggest_kerjasama_gubernur" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>
+																	                         		<field name="suggest_kerjasama_kepalaopd" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>     
+																									<field name="suggest_kerjasama_atasan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>
+																                       			</group>
+																                       			<group col="2">                             	
+																	                        		<field name="suggest_kerjasama_rapat_nasional" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>         
+																	                         		<field name="suggest_kerjasama_rapat_provinsi" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>
+																									<field name="suggest_kerjasama_rapat_perangkat_daerah" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>     
+																	                       			<field name="suggest_kerjasama_rapat_atasan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>                                 	
+																                        		</group>            	
+															                        </group>
+															                          <div style="background:#19bb9b" attrs="{'invisible':[('employee_job_type','!=', 'struktural')]}" >
+															                        	 	<h3>Kepemimpinan</h3>
+															                         </div>
+															                        <group col="4" attrs="{'invisible':[('employee_job_type','!=', 'struktural')]}"  >
+															                        	 <div>
+															                        	 		<group col="2">
+																									<field name="suggest_kepemimpinan_nasional" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>                            	
+																									<field name="suggest_kepemimpinan_gubernur" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>                          	
+																									<field name="suggest_kepemimpinan_kepalaopd" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/> 
+																									<field name="suggest_kepemimpinan_atasan" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>                                 	
+																                       			</group>
+													                        					<group col="2">
+													                        						<field name="suggest_kepemimpinan_narsum_nasional" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>                             	
+																									<field name="suggest_kepemimpinan_narsum_provinsi" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>
+																	                        		<field name="suggest_kepemimpinan_narsum_perangkat_daerah" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>      
+																	                       			<field name="suggest_kepemimpinan_narsum_unitkerja" attrs="{'readonly':[('work_state','not in', ('propose','rejected_bkd'))]}"/>                              	
+																                        		</group>                    	
+																                        </div>
+															                        </group>
+														                      </div>
+														                	</group>
+																		</div>
+																	</group> <!-- END GROUP Ajukan   -->  
+											  					</div><!-- END DIV Ajukan   -->		
+			<!-- DIV APPEAL -->	
+														<div attrs="{'invisible': [('is_appeal','=',False)]}">
+															<group string='Banding' attrs="{'invisible': [('is_appeal','=',False)]}"  >	
+																   <div name="tambahan_appeal"  attrs="{'invisible': [('target_type_id','!=','tambahan')]}" >
+																	     <div style="background:#19bb9b" >
+																	     	<h3>Tugas Tambahan</h3>
+																	     </div>	
+																		 <group col="2">
+													                         		<field name="appeal_tugas_tambahan" attrs="{'readonly':[('work_state','!=', 'appeal')],'required':[('target_type_id','in',('tambahan')),('is_appeal','=',True)]}"/>
+													                         		<field name="appeal_uraian_tugas_tambahan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+										                        		</group>
+										                        		<group col="6">
+																				    <field name="appeal_rl_opd_tugas_tambahan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+													                         		<field name="appeal_rl_gubernur_tugas_tambahan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+																					<field name="appeal_rl_presiden_tugas_tambahan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																		</group>
+																		<group col="2">
+																					<field name="appeal_attach_tugas_tambahan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																		</group>
+										                        		 <div style="background:#19bb9b" >
+																	     	<h3>Kreatifitas</h3>
+																		 </div>	
+																		 <group col="2">
+													                         		
+																					<field name="appeal_nilai_kreatifitas" attrs="{'readonly':[('work_state','!=', 'appeal')],'required':[('target_type_id','in',('tambahan')),('is_appeal','=',True)]}"/>       
+																					<field name="appeal_uraian_kreatifitas" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+																					<field name="appeal_tupoksi_kreatifitas" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																		</group>
+										                        		<group col="6">
+																				    <field name="appeal_rl_opd_kreatifitas" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+													                         		<field name="appeal_rl_gubernur_kreatifitas" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+																					<field name="appeal_rl_presiden_kreatifitas" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																		</group>
+																		<group col="2">
+																					<field name="appeal_attach_kreatifitas" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																		</group>
+													                       
+											                    </div>
+											                    
+										                    
+										                        <div name="perilaku_kerja_appeal"  attrs="{'invisible': [('target_type_id','!=','perilaku')]}" >
+											                        <group>
+												                    		<div>
+															                        <div style="background:#19bb9b" >
+															                        	<h3>Orientasi Pelayanan</h3>
+															                       	</div>
+																					<group col="2" >
+																						 <group>
+																								<field name="appeal_jumlah_konsumen_pelayanan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+																								<field name="appeal_satuan_jumlah_konsumen_pelayanan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>       
+																                         		<field name="appeal_jumlah_tidakpuas_pelayanan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+																                         </group>
+																                          <group attrs="{'invisible': [('is_kepala_opd','=',False)]}" >
+																								<field name="appeal_ketepatan_laporan_spj" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+																								<field name="appeal_ketepatan_laporan_ukp4" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>       
+																                         		<field name="appeal_efisiensi_biaya_operasional" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+														                         		</group>
+															                        </group>
+															                        <div style="background:#19bb9b" >
+															                        	 	<h3>Integritas</h3>
+															                        </div>	
+															                        <div style="background:#8addf6" >
+													                        	 		<h5>Hukuman Disiplin</h5>
+													                        		</div>	
+																			<group col="2">
+																							<field name="appeal_integritas_hukuman" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																							<field name="appeal_integritas_hukuman_ringan" attrs="{'readonly':[('work_state','!=', 'appeal')],'invisible':[('appeal_integritas_hukuman','=', 'tidak')]}"/>    
+																							<field name="appeal_integritas_hukuman_sedang" attrs="{'readonly':[('work_state','!=', 'appeal')],'invisible':[('appeal_integritas_hukuman','=', 'tidak')]}"/>
+																							<field name="appeal_integritas_hukuman_berat" attrs="{'readonly':[('work_state','!=', 'appeal')],'invisible':[('suggest_integritas_hukuman','=', 'tidak')]}"/>                                	
+																							  
+															                </group>
+															                 <div style="background:#8addf6" >
+													                        	 		<h5>Penghargaan</h5>
+													                        		</div>	
+																					<group col="4">
+															                        	 		<group col="2">
+																									<field name="appeal_integritas_presiden" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>                        	
+																									<field name="appeal_integritas_gubernur" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																									<field name="appeal_integritas_kepalaopd" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+																									<field name="appeal_integritas_atasan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>  
+																	                        	</group>       
+																								<group col="2">
+																									<field name="appeal_integritas_es1" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>  
+																									<field name="appeal_integritas_es2" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>   
+																									<field name="appeal_integritas_es3" attrs="{'readonly':[('work_state','!=', 'appeal')]}" invisible="True" />     
+																	                       			<field name="appeal_integritas_es4" attrs="{'readonly':[('work_state','!=', 'appeal')]}" invisible="True" />																
+																								</group>                            	
+															                        </group>
+															                         <div style="background:#19bb9b" >
+															                        	 	<h3>Komitmen</h3>
+															                         </div>
+															                         <group col="2">
+															                         			<div invisible="True" >
+															                         			<group col="2">										                         									
+																	                         		<field name="appeal_apel_pagi" invisible="True" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>   
+																									<field name="appeal_upacara_hari_besar" invisible="True" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+																								</group>
+																								</div>
+																								<div>
+																								<group col="4">		
+																								    <field name="appeal_hadir_apel_pagi" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>		
+																									<field name="appeal_hadir_upacara_hari_besar"  attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																                         		</group>	 
+																								</div>   
+															                        </group>
+															                        <div style="background:#19bb9b" >
+															                        	 	<h3>Disiplin</h3>
+															                         </div>
+															                         <group col="2">
+															                         			<div invisible="True" >
+															                         			<group col="2">										                         									
+																	                         		<field name="appeal_jumlah_hari_kerja" invisible="True" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																									<field name="appeal_jumlah_jam_kerja"  invisible="True" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																									 
+																								</group>
+																								</div>
+																								<div>
+																								<group col="4">		
+																								    <field name="appeal_hadir_hari_kerja" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>  
+																	                         		<field name="appeal_hadir_jam_kerja" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																                         		</group>	 
+																								</div>   
+															                        </group>
+															                        <div style="background:#19bb9b" >
+															                        	 	<h3>Kerjasama</h3>
+															                         </div>
+															                        
+																					<group col="4">
+															                             		<group col="2">
+																									<field name="appeal_kerjasama_nasional" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>                            	
+																	                         		<field name="appeal_kerjasama_gubernur" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																	                         		<field name="appeal_kerjasama_kepalaopd" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>     
+																									<field name="appeal_kerjasama_atasan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																                       			</group>
+																                       			<group col="2">                             	
+																	                        		<field name="appeal_kerjasama_rapat_nasional" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>         
+																	                         		<field name="appeal_kerjasama_rapat_provinsi" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																									<field name="appeal_kerjasama_rapat_perangkat_daerah" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>     
+																	                       			<field name="appeal_kerjasama_rapat_atasan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>                                 	
+																                        		</group>            	
+															                        </group>
+															                          <div style="background:#19bb9b" attrs="{'invisible':[('employee_job_type','!=', 'struktural')]}"  >
+															                        	 	<h3>Kepemimpinan</h3>
+															                         </div>
+															                        <group col="4" attrs="{'invisible':[('employee_job_type','!=', 'struktural')]}"  >
+															                        	 <div>
+															                        	 		<group col="2">
+																									<field name="appeal_kepemimpinan_nasional" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>                            	
+																									<field name="appeal_kepemimpinan_gubernur" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>                          	
+																									<field name="appeal_kepemimpinan_kepalaopd" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/> 
+																									<field name="appeal_kepemimpinan_atasan" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>                                 	
+																                       			</group>
+													                        					<group col="2">
+													                        						<field name="appeal_kepemimpinan_narsum_nasional" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>                             	
+																									<field name="appeal_kepemimpinan_narsum_provinsi" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>
+																	                        		<field name="appeal_kepemimpinan_narsum_perangkat_daerah" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>      
+																	                       			<field name="appeal_kepemimpinan_narsum_unitkerja" attrs="{'readonly':[('work_state','!=', 'appeal')]}"/>                              	
+																                        		</group>                    	
+																                        </div>
+															                        </group>
+														                      </div>
+														                	</group>
+																		</div>
+															</group> <!-- END GROUP BKD   -->  
+											  			</div><!-- END DIV BKD   -->		
+			
+															
+												</group> <!-- Group Kategori REalisasi & Target  -->	
+											</div>  <!-- KATEGORI E-F -->    
+			                	 				
+									</group>
+							
+								</group>
+		                    </page>
+		                    
+							<page string="Informasi Tambahan">
+							<group>
+								<group string="Perilaku">
+																		
+								</group>	
+								
+								<group string="Kepegawaian">
+									<field name="company_id"  readonly="True" string="OPD / Dinas"/>   
+									
+		                            <field name="user_id_atasan"  attrs="{'readonly':[('work_state','not in',['new', 'draft'])]}"/>
+		                            <field name="user_id_banding"  attrs="{'readonly':[('work_state','not in',['new', 'draft'])]}"/>
+		                            <field name="user_id_bkd"  attrs="{'readonly':[('work_state','not in',['new', 'draft'])]}"/>
+		                            
+								</group>
+							</group>						
+							</page>
+							<page string="Catatan Koreksi Dan Lampiran">
+								<group>
+									<field name="is_suggest" readonly="True" />
+									<field name="notes_atasan"/>
+									<field name="is_appeal" readonly="True" />
+                	 				<field name="notes_atasan_banding"/>
+                	 				<field name="is_control" readonly="True"/>  
+									<field name="notes_from_bkd"/>
+									<field name="control_count" readonly="True"/>
+								</group>
+								<group>
+									<field name="attachment_1"/>
+									<field name="attachment_2"/>  
+									<field name="attachment_3"/>
+								</group>
+							</page>
+							<page string="Detail Nilai" name="nilai" attrs="{'invisible': [('work_state','!=','done')]}">
+		                  		<!--<field name="nilai_akhir" />-->
+		                  		<group col="4">   
+									<h2>Total : <field name="jumlah_perhitungan" /></h2>
+								</group>
+		                  		<div name="nilai_perilaku_kerja"  attrs="{'invisible': [('target_type_id','!=','perilaku')]}" >
+		                  		      <group col="2">   
+		  							    <field name="nilai_pelayanan" />
+									    <field name="nilai_integritas" />  
+										<field name="nilai_komitmen" />  
+										<field name="nilai_disiplin" />  
+										<field name="nilai_kerjasama" />  
+										<field name="nilai_kepemimpinan" />    
+									  </group>         		
+		                  		</div>               
+								               
+							  </page>    
+		                 </notebook>
+	                </sheet>                    
+					 <div class="oe_chatter">
+	                        <field name="message_follower_ids" widget="mail_followers"/>
+	                        <field name="message_ids" widget="mail_thread"/>
+	                 </div>
+                </form>
+            </field>
+        </record>
+		<!-- ========================================= Realisasi Perilaku Menu =============================================== -->
+		 <record model="ir.actions.act_window" id="action_menu_realisasi_perilaku">
+            <field name="name">Realisasi Perilaku Dan Tugas Tambahan</field>
+            <field name="res_model">project.task</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('user_id','=',uid),('task_category','=','non_skp')]</field>
+            <field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Data Kosong 
+              </p>
+            </field>
+        </record>
+        <record model="ir.actions.act_window.view" id="action_menu_realisasi_perilaku_tree_view">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="view_menu_realisasi_perilaku_tree"/>
+			<field name="search_view_id" ref="df_project.open_view_realisasi_bulanan_all_filter"/>
+			<field name="act_window_id" ref="action_menu_realisasi_perilaku"/>
+		</record>
+        <record model="ir.actions.act_window.view" id="action_menu_realisasi_perilaku_form_view">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="view_menu_realisasi_perilaku_form"/>
+			<field name="act_window_id" ref="action_menu_realisasi_perilaku"/>
+		</record>
+		<menuitem id="menu_perilaku" name="Perilaku,Tambahan Dan Kreatifitas" parent="base.menu_main_pm" sequence="2" groups="project.group_project_user,df_project.group_project_evaluated_bkd"/>
+		<menuitem action="action_menu_realisasi_perilaku" id="menu_realisasi_perilaku" name="Realisasi" parent="menu_perilaku" sequence="52" groups="project.group_project_user"/>
+		
+	</data>
+</openerp>

@@ -1,0 +1,198 @@
+# -*- coding: utf-8 -*-
+# Copyright 2010 Thamini S.à.R.L    This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+
+import time
+import xlwt
+from ad_account_optimization.report.report_engine_xls import report_xls
+from ig_ar_konsumen.report.arkonsumen_rep import ReportArkonsumen
+
+import cStringIO
+from xlwt import Workbook, Formula
+from tools.translate import _
+
+
+
+class report_arkonsumen_xls(report_xls):
+    no_ind = 0
+    
+    def get_no_index(self):
+        self.set_no_index()
+        return self.no_ind
+    def set_no_index(self):
+        self.no_ind += 1
+        return True
+    
+    def create_source_xls(self, cr, uid, ids, data, report_xml, context=None):
+        
+        if not context:
+            context = {}
+        context = context.copy()
+        rml_parser = self.parser(cr, uid, self.name2, context=context)
+        objs = self.getObjects(cr, uid, ids, context=context)
+        rml_parser.set_context(objs, data, ids, 'xls')
+
+        n = cStringIO.StringIO()
+        wb = xlwt.Workbook(encoding='utf-8')
+        print "aaaaaaaaaaaaaaaa",rml_parser.localcontext['objects']
+        self.generate_xls_report(rml_parser, data, rml_parser.localcontext['objects'], wb)
+        wb.save(n)
+        n.seek(0)
+
+        return (n.read(), 'xls')
+        
+    def _get_start_date(self, data):
+        if data.get('form', False) and data['form'].get('date', False):
+            return data['form']['date']
+        return ''
+    
+    
+    def _display_start_date(self, parser, data):
+        k = parser.formatLang(data['form']['date'], date=True)
+        if k:
+            k = '%s' % (k)
+        return k
+    
+    def _get_journal(self,data):
+        return '%s' % data['form']['period'][1]
+    
+    
+    def generate_xls_report(self, parser, data, obj, wb):
+        c = parser.localcontext['company']
+        ws = wb.add_sheet(('AR Konsumen'))
+        ws.panes_frozen = True
+        ws.remove_splits = True
+        ws.portrait = True # Landscape
+        ws.fit_width_to_pages = 1
+        ws.col(1).width = len("ABCDEFG")*1024
+        print "data",data['form']
+        cols_specs = [
+                # Headers data	
+		('Title',  11, 0, 'text',
+                    lambda x, d, p: 'AR Konsumen'),
+                ('Kosong', 11, 0, 'text',
+                    lambda x, d, p: ' '),
+                (' ', 1, 0, 'text',
+                    lambda x, d, p: ' '),
+                ('Periode', 11, 0, 'text',
+                    lambda x, d, p: 'Periode : '+ parser._get_periode(d)+' - '+parser._get_periode_to(d)),
+
+                 ('Lantai', 1, 80, 'text',
+                    lambda x, d, p: parser._get_lantai(x['id'])),             
+                 ('Unit', 1, 100, 'text',
+                    lambda x, d, p: parser._get_unit(x['id'])),               
+                 ('Luas', 1, 100, 'number',
+                    lambda x, d, p: parser._get_luas(x['id'])),                                                      
+                 ('Nama', 1, 100, 'text',
+                    lambda x, d, p: parser._get_nama(x['id'])),            
+                 ('Alamat', 1, 100, 'text',
+                    lambda x, d, p: parser._get_alamat(x['id'])),
+                 ('NoSKU', 1, 100, 'text',
+                    lambda x, d, p: parser._get_func_sku(x['id'])),
+                 ('Npwp', 1, 100, 'text',
+                    lambda x, d, p: parser._get_npwp(x['id'])),                       
+                 ('Telp', 1, 100, 'number',
+                    lambda x, d, p: parser._get_telp(x['id'])),
+                 ('Harga_Jual', 1, 100, 'number',
+                    lambda x, d, p: parser._get_hargajual(x['id'])),            
+                 ('PPN', 1, 100, 'number',
+                    lambda x, d, p: parser._get_ppn(x['id'])),            
+                 ('Total_Harga_Jual', 1, 100, 'number',
+                    lambda x, d, p: parser._get_total_hargajual(x['id'])),
+                 ('Cara_Bayar', 1, 100, 'text',
+                    lambda x, d, p: parser._get_cara_byr(x['id'])),
+                 ('Tanggal_Hrs_Bayar', 1, 100, 'text',
+                    lambda x, d, p: parser._get_tanggal(x['id'])),
+                 ('Tanggal_Bayar', 1, 100, 'text',
+                    lambda x, d, p: parser._get_payment_date(x['id'])),
+                 ('Angsuran', 1, 100, 'text',
+                    lambda x, d, p: parser._get_angsuran(x['id'])),       
+                 ('Booking', 1, 100, 'number',
+                    lambda x, d, p: parser._get_booking(x['id'])),
+                 ('Jumlah', 1, 100, 'number',
+                    lambda x, d, p: parser._get_jumlah_angsuran(x['id'])),
+                 ('Jumlah_Bayar', 1, 100, 'number',
+                    lambda x, d, p: parser._get_jumlah_bayar(x['id'])),
+                 ('Sisa', 1, 100, 'number',
+                    lambda x, d, p: parser._get_sisa(x['id'])),
+                 ('Hari_Telat', 1, 100, 'number',
+                    lambda x, d, p: parser._get_telat(x['id'])),
+                 ('Denda', 1, 100, 'number',
+                    lambda x, d, p: parser._get_denda(x['id'])),
+                 ('Agent', 1, 100, 'text',
+                    lambda x, d, p: parser._get_agent(x['id'])),
+                 ('Hp_Agent', 1, 100, 'text',
+                    lambda x, d, p: ' '),
+                 ('Leader', 1, 100, 'text',
+                    lambda x, d, p: ' '),
+
+                ('Grand'  , 1, 80, 'number',
+                    lambda x, d, p: x['grand'] or 0.0),
+
+   ]
+
+	row_hdr0 = self.xls_row_template(cols_specs, ['Title'])
+
+        row_hdr1 = self.xls_row_template(cols_specs, ['Periode'])
+
+        row_first = self.xls_row_template(cols_specs,[' '])
+        row_second = self.xls_row_template(cols_specs,['Lantai','Unit','Luas','Nama','Alamat','NoSKU','Npwp','Telp','Harga_Jual','PPN','Total_Harga_Jual','Cara_Bayar','Tanggal_Hrs_Bayar','Tanggal_Bayar','Angsuran','Booking','Jumlah','Jumlah_Bayar','Sisa','Hari_Telat','Denda','Agent','Hp_Agent','Leader'])
+        row_third = self.xls_row_template(cols_specs,[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','Grand','',' ',' ',' ',' ',' '])
+	row_fourth = self.xls_row_template(cols_specs,[' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','','Grand',''])
+        hdr_style = xlwt.easyxf('pattern: pattern solid, fore_color gray25;')
+        row_normal_style=  xlwt.easyxf(num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_style = xlwt.easyxf('font: bold on;',num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_top_style = xlwt.easyxf('font: bold on;borders: top thin ;',num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_bottom_style = xlwt.easyxf('font: bold on;borders: bottom thin;',num_format_str='#,##0.00;(#,##0.00)')
+        
+
+        tittle_style = xlwt.easyxf('font: height 240, name Arial Black, colour_index black, bold on; align: wrap on, vert centre, horiz center; pattern: pattern solid, fore_color white;')
+        subtittle_left_style = xlwt.easyxf('font: name Arial, colour_index brown, bold on, italic on; align: wrap on, vert centre, horiz right; pattern: pattern solid, fore_color white;')
+        subtittle_right_style = xlwt.easyxf('font: name Arial, colour_index brown, bold on, italic on; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        subtittle_top_and_bottom_style = xlwt.easyxf('font: height 240, name Arial, colour_index black, bold off, italic on; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        blank_style = xlwt.easyxf('font: height 650, name Arial, colour_index brown, bold off; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        normal_style = xlwt.easyxf('font: height 240, name Arial, colour_index black, bold off; align: wrap on, vert centre, horiz left;')
+        total_style = xlwt.easyxf('font: height 200, name Arial, colour_index black, bold on, italic on; align: wrap on, vert centre;pattern: pattern solid, fore_color gray25;', num_format_str='#,##0.00;(#,##0.00)')
+        total_style1 = xlwt.easyxf('font: height 200, name Arial, colour_index black, bold on, italic on; align: wrap on, vert centre, horiz center;;pattern: pattern solid, fore_color gray25;', num_format_str='#,##0.00;(#,##0.00)')
+        ## Style variable End
+        
+
+        # Write headers
+
+        self.xls_write_row(ws, None, data, parser, 0, row_hdr0, tittle_style)
+        
+        
+        self.xls_write_row(ws, None, data, parser, 1, row_hdr1, subtittle_right_style)
+        
+
+        self.xls_write_row_header(ws, 2, row_first, total_style1, set_column_size=True)
+        self.xls_write_row_header(ws, 3, row_second, total_style, set_column_size=True)
+       
+        row_count = 4
+        sum = 0.0
+        for dt in parser._get_data_all(data):
+            sum += parser._get_jumlah_angsuran(dt['id'])
+            self.xls_write_row(ws, dt, data, parser, row_count, row_second, row_normal_style)
+            row_count+=1
+        self.xls_write_row(ws, {'grand':sum}, data, parser, row_count, row_third, row_normal_style)
+	row_count+=1
+
+	sum_bayar = 0.0	
+        for dt in parser._get_data_all(data):
+            sum_bayar += parser._get_jumlah_bayar(dt['id'])
+        self.xls_write_row(ws, {'grand':sum_bayar}, data, parser, row_count, row_fourth, row_normal_style)
+	row_count+=1
+
+
+        pass
+#     print "asdaa"
+from netsvc import Service
+del Service._services['report.arkonsumen.lap.xls']
+report_arkonsumen_xls(
+        'report.arkonsumen.lap.xls',
+        'lap.arkonsumen',
+        'addons/ig_ar_konsumen/report/arkonsumen_rep.mako',
+        parser=ReportArkonsumen,
+        header=True)
+
+

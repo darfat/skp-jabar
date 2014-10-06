@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+		<record id="action_project_task_massive_verify_view" model="ir.ui.view">
+            <field name="name">project.task.massive.form</field>
+            <field name="model">project.task.massive</field>
+            <field name="arch" type="xml">
+                <form string="Verifikasi Semua Kegiatan" version="7.0">
+                    <p class="oe_grey">
+                        Proses massive ini akan memproses semua kegiatan.
+                    	Semua kegiatan diverifikasi dan proses penilaian prestasi kerja pegawai selesai.
+                    	Yakinkan semua data yang dipilih sudah benar.
+                    </p>
+                    <footer>
+                        <button string="Selesai" name="verify_all_task" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_project_task_massive_verify"
+            multi="True"
+            key2="client_action_multi" name="Verifikasi Kegiatan"
+            res_model="project.task.massive" src_model="project.task"
+            view_mode="form" target="new" view_type="form" />
+        
+<!-- Hitung ulang -->
+	<record id="action_project_task_massive_recalculate_verify_view" model="ir.ui.view">
+            <field name="name">project.task.recalculate.massive.form</field>
+            <field name="model">project.task.recalculate.massive</field>
+            <field name="arch" type="xml">
+                <form string="Hitung Ulang Semua Kegiatan" version="7.0">
+                    <p class="oe_grey">
+                        Proses massive ini akan menghitung ulang semua kegiatan.
+                    	Semua kegiatan dihitung dan proses penilaian prestasi kerja pegawai selesai.
+                    	Yakinkan semua data yang dipilih sudah benar.
+                    </p>
+                    <footer>
+                        <button string="Selesai" name="recalculate_all_task" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_project_task_massive_recalculate"
+            multi="True"
+            key2="client_action_multi" name="Hitung Ulang Nilai SKP"
+            res_model="project.task.recalculate.massive" src_model="project.task"
+            view_mode="form" target="new" view_type="form" />
+   <!-- Ajukan Ke BKD -->
+	<record id="action_project_task_massive_verify2_view" model="ir.ui.view">
+            <field name="name">project.task.massive.verify.form</field>
+            <field name="model">project.task.massive.verify</field>
+            <field name="arch" type="xml">
+                <form string="Ajukan Semua Kegiatan Ke BKD" version="7.0">
+                    <field name="notes"/>
+                    <p class="oe_grey">
+                        Proses massive ini akan merubah status menjadi verifikasi BKD.
+                    	Proses pengajuan ke BKD semua kegiatan ini diwakilkan oleh admin BKD.
+                    	Catatan Diisi Dengan Keterangan Bahwa Kegiatan Akan Diajukan Ke BKD Bukan Oleh Atasan Langsung. 
+                        Catatan ini akan menjadi bahan evaluasi untuk kegiatan berikutnya.
+                    	Yakinkan semua data yang dipilih sudah benar.
+                    </p>
+                    <footer>
+                        <button string="Ajukan Ke BKD" name="ajukan_bkd_all_task" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_project_task_massive_verify2"
+            multi="True"
+            key2="client_action_multi" name="Ajukan Kegiatan Ke BKD" 
+            res_model="project.task.massive.verify" src_model="project.task"
+            view_mode="form" target="new" view_type="form" />
+        
+       	<record id="action_project_task_massive_notarget_view" model="ir.ui.view">
+            <field name="name">project.task.reject.notarget.form</field>
+            <field name="model">project.task.reject.notarget</field>
+            <field name="arch" type="xml">
+                <form string="Tolak Kegiatan Tanpa Target" version="7.0">
+                    <field name="notes"/>
+                    <p class="oe_grey">
+                        Proses massive ini akan merubah status kembali menajadi REALISASI.
+                    	Kegiatan SKP ini harus dibatalkan sendiri oleh Pegawai Yang Bersangkutan.
+                        Isi Catatan Menerangkan Bahwa Realisasi Harus Dibatalkan Karena Tidak Memiliki Target Tahunan
+                    	Yakinkan semua data yang dipilih sudah benar.
+                    </p>
+                    <footer>
+                        <button string="Tolak SKP" name="reject_notarget" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_project_task_massive_notarget"
+            multi="True" 
+            key2="client_action_multi" name="Tolak SKP Tanpa Target" 
+            res_model="project.task.reject.notarget" src_model="project.task"
+            view_mode="form" target="new" view_type="form" /> 
+
+	   	<record id="action_project_task_massive_nilaisementara_view" model="ir.ui.view">
+            <field name="name">project.task.calculate.temp.poin.form</field>
+            <field name="model">project.task.calculate.temp.poin</field>
+            <field name="arch" type="xml">
+                <form string="Kalkulasi Penilaian Sementara" version="7.0">
+                    
+                    <p class="oe_grey">
+                        Proses ini akan menghitung nilai sementara.
+                        Status pada kegiatan ini tidak akan berubah.
+                        Fungsi ini hanya bantuan saat proses verifikasi.
+                    	Yakinkan semua data yang dipilih sudah benar.
+                    </p>
+                    <footer>
+                        <button string="Kalkulasi Nilai Sementara" name="calculate_nilai_sementara" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_project_task_massive_nilaisementara" 
+            multi="True"
+            key2="client_action_multi" name="Kalkulasi Nilai Sementara" 
+            res_model="project.task.calculate.temp.poin" src_model="project.task"
+            view_mode="form" target="new" view_type="form" /> 
+		
+    </data>
+</openerp>

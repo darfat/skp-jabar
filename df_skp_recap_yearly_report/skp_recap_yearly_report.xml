@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		<record model="ir.ui.view" id="view_skp_recap_yearly_report">
+			<field name="name">Laporan Rekapitulasi Tahunan</field>
+			<field name="model">skp.recap.yearly.report</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Laporan Rekapitulasi Tahunan" version="7.0">
+					<group>
+						<field name="period_year" class="oe_inline"/>
+						<field name="print_date" class="oe_inline"/>
+						<field name="company_id" class="oe_inline" groups="base.group_no_one"/>
+						<field name="user_id" class="oe_inline" groups="base.group_no_one"/>
+						
+					</group>
+					<footer>
+						<div>
+							<button type="object" name="get_skp_recap_yearly_report" string="Simpan Laporan" icon="gtk-go-down"/>
+					or
+							<button special="cancel" string="Cancel" class="oe_link"/>
+						</div>
+					</footer>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_menu_skp_rekap_yearly">
+			<field name="name">Laporan Rekapitulasi Tahunan</field>
+			<field name="res_model">skp.recap.yearly.report</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+			<field name="view_id" ref="view_skp_recap_yearly_report"/>
+		</record>
+		
+		<menuitem action="action_menu_skp_rekap_yearly" id="menu_skp_rekap_yearly" name="Laporan Rekapitulasi Tahunan" parent="df_project.menu_rekapitulasi" sequence="11"  groups="project.group_project_user,df_project.group_project_evaluated_bkd"/>
+	</data>
+</openerp>

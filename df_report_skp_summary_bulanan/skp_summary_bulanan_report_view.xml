@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>      
+
+
+        
+
+		<record model="ir.ui.view" id="view_skp_summary_bulanan_report_wizard">
+            <field name="name">Rekap SKP</field>
+            <field name="model">skp.summary.bulanan.report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Rekapitulasi Realisasi Per Tahun" version="7.0">
+					<group>
+						<field name="target_period_month"/>
+						<field name="target_period_year"/>
+              			<field name="company_id" groups="df_project.group_project_evaluated_bkd"/>
+              			<field name="biro_id" groups="df_project.group_project_evaluated_bkd" />
+              			<field name="is_kepala_opd" groups="df_project.group_project_evaluated_bkd"/>       
+						<newline/>
+						<field name="paging_data"/>
+						 
+              			
+                    </group>
+                  <footer>
+                    <div>
+                        <button type="object" name="compute_rep" string="Download" icon="terp-gtk-go-back-rtl"/>              
+						 or
+						 <button special="cancel" string="Cancel" class="oe_link"/>
+                    </div>
+                </footer>
+                </form>
+            </field>
+		</record>
+        
+       <record model="ir.actions.act_window" id="action_skp_summary_bulanan_report">
+            <field name="name">Rekapitulasi SKP Bulanan</field>
+            <field name="res_model">skp.summary.bulanan.report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_skp_summary_bulanan_report_wizard"/>
+        </record>
+        
+
+		
+		<menuitem action="action_skp_summary_bulanan_report" id="menu_skp_summary_bulanan_report" groups="project.group_project_user,df_project.group_project_evaluated_bkd" 
+              parent="df_project.menu_rekapitulasi" sequence="3"  />
+        
+        <report id="report_skp_summary_bulanan_report_form"
+        name="skp.summary.bulanan.report.form"
+        string="Rekap SKP"
+        file="df_report_skp_summary_bulanan/report/skp_summary_bulanan_pdf_report.mako"
+        report_type="webkit"
+        model="skp.summary.bulanan.report"
+        auto="False"
+        menu="False"
+        />
+
+        </data>
+</openerp>

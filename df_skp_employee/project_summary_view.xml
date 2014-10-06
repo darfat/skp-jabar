@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+	<!-- =========================================  Akumulasi Perhitungan Target Tahunan =============================================== -->
+
+		
+        
+ 		 <record id="view_menu_target_skp_form_calculation" model="ir.ui.view">
+              <field name="name">project.project.form</field>
+              <field name="model">project.project</field>
+              <field name="inherit_id" ref="df_project.edit_pns_target"/>
+              <field name="arch" type="xml">
+                <xpath expr="/form/sheet/notebook/page[@name='target']" position="after">
+                	<page string="Realisasi" name="realisasi"  attrs="{'invisible': [('state','not in',('closed','confirm'))]}"> 
+						<h2> Akumulasi Realisasi </h2>
+						<group col="3">
+			               <group>
+								<h3>Jumlah Perhitungan : <field name="total_nilai_target_skp"  /></h3>
+								
+			               </group>
+			                <group>
+								<h3>Capaian Nilai SKP : <field name="total_capaian_target_skp" /></h3>
+			               </group>
+			            </group>
+			            <group col="3">
+			               <group>
+								<h4>Jumlah Realisasi : <field name="count_of_done"  /></h4>
+								
+			               </group>
+			                <group>
+								
+			               </group>
+			            </group>
+			            <hr/>
+						<group string="Detail" col="3">
+			               <group>
+								<field name="total_target_jumlah_kuantitas_output"  />
+								<field name="total_target_kualitas"  />
+								<field name="total_target_waktu"  />
+								<field name="total_target_biaya"  />   
+								<field name="total_target_angka_kredit"  />                  
+			               </group>
+			                <group>
+								<field name="total_realisasi_jumlah_kuantitas_output" />
+								<field name="total_realisasi_kualitas" />
+								<field name="total_realisasi_waktu" />
+								<field name="total_realisasi_biaya" />
+								<field name="total_realisasi_angka_kredit" />                                             	
+			               </group>
+			            </group>
+					</page>
+			    </xpath>
+            </field>
+        </record>
+       
+	</data>
+</openerp>

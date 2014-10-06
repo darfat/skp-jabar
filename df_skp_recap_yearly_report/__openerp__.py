@@ -1,0 +1,15 @@
+{
+    "name": "Laporan Rekapitulasi Target Tahunan",
+    "version": "1.0",
+    "author": "Darmawan Fatriananda",
+    "category": "Penilaian Prestasi Kerja/Rekapitulasi /Rekapitulasi Tahunan /",
+    "description": "Laporan Rekapitulasi Target Tahunan",
+    "website" : "www.asdarfat.wordpress.com",
+    "license" : "",
+    "depends": ['df_skp_employee'],
+    "init_xml": [],
+    'data': ["skp_recap_yearly_report.xml",],
+    'demo_xml': [],
+    'installable': True,
+    'active': False,
+}

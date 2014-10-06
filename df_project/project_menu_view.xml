@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<!-- Target -->
+		<record id="action_projects_for_atasan" model="ir.actions.act_window">
+            <field name="name">Target Kerja Unit</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="domain">[]</field>
+            <field name="view_mode">tree,form</field>
+            <field name="inherit_id" ref="project.open_view_project_all"/>
+            <field name="view_id" ref="project.view_project_kanban"/>
+            <field name="search_view_id" ref="df_project.open_view_target_tahunan_all_filter"/>
+            <field name="context">{'search_default_Current': 1}</field>
+            <field name="domain">['|','|',('user_id_atasan','=',uid),('user_id_banding','=',uid),('user_id_bkd','=',uid)]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                  Tidak ada data target tahunan.
+              </p>
+            </field>
+        </record>
+      
+        <record id="action_projects_revisi_target_tahunan" model="ir.actions.act_window">
+            <field name="name">Revisi SKP</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="domain">[]</field>
+            <field name="view_mode">tree,form</field>
+            <field name="inherit_id" ref="project.open_view_project_all"/>
+            <field name="view_id" ref="project.view_project_kanban"/>
+            <field name="search_view_id" ref="df_project.open_view_target_tahunan_all_filter"/>
+            <field name="domain">[('state','=','propose_correction'),('user_id_bkd','=',uid)]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                  Tidak ada data target tahunan Yang Di revisi
+              </p>
+            </field>
+        </record>
+        <record id="action_projects_closing_target_tahunan" model="ir.actions.act_window">
+            <field name="name">Pengajuan Closing SKP</field>
+            <field name="res_model">project.project</field>
+            <field name="view_type">form</field>
+            <field name="domain">[]</field>
+            <field name="view_mode">tree,form</field>
+            <field name="inherit_id" ref="project.open_view_project_all"/>
+            <field name="view_id" ref="project.view_project_kanban"/>
+            <field name="search_view_id" ref="df_project.open_view_target_tahunan_all_filter"/>
+            <field name="domain">[('state','=','propose_to_close'),('user_id_bkd','=',uid)]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                  Tidak ada data target tahunan Yang akan di close
+              </p>
+            </field>
+        </record>
+      	
+		<menuitem action="action_projects_for_atasan" id="menu_projects_for_atasan" name="Target Kerja Unit" parent="menu_main_pm_all" sequence="1" groups="project.group_project_manager,df_project.group_project_appeal,df_project.group_project_evaluated_bkd"/>
+		<menuitem action="action_projects_revisi_target_tahunan" id="menu_projects_revisi_target" name="Pengajuan Revisi Target" parent="project.menu_project_management" sequence="5" groups="df_project.group_project_evaluated_bkd"/>
+		<menuitem action="action_projects_closing_target_tahunan" id="menu_projects_closing_target" name="Pengajuan Closing Target" parent="project.menu_project_management" sequence="6" groups="df_project.group_project_evaluated_bkd"/>
+		
+
+
+	<!-- Realisasi -->
+	
+	</data>
+</openerp>

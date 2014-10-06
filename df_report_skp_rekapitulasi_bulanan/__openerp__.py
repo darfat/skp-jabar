@@ -1,0 +1,15 @@
+{
+    "name": "Laporan Rekapitulasi Realisasi Format Excel",
+    "version": "1.0",
+    "author": "Darmawan Fatriananda",
+    "category": "Penilaian Prestasi Kerja/Rekapitulasi /Rekapitulasi Pegawai /",
+    "description": "Laporan Rekapitulasi Realisasi Per Status.",
+    "website" : "www.asdarfat.wordpress.com",
+    "license" : "",
+    "depends": ['project','hr'],
+    "init_xml": [],
+    'update_xml': ["skp_monthly_recapitulation_report.xml",],
+    'demo_xml': [],
+    'installable': True,
+    'active': False,
+}

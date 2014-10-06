@@ -1,0 +1,169 @@
+# -*- coding: utf-8 -*-
+# Copyright 2010 Thamini S.à.R.L    This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+
+import time
+import xlwt
+from ad_account_optimization.report.report_engine_xls import report_xls
+from ad_laporan_installment.report.installment_rep import ReportInstallment
+
+import cStringIO
+from xlwt import Workbook, Formula
+from tools.translate import _
+
+
+
+class report_installment_xls(report_xls):
+    no_ind = 0
+    
+    def get_no_index(self):
+        self.set_no_index()
+        return self.no_ind
+    def set_no_index(self):
+        self.no_ind += 1
+        return True
+    
+    def create_source_xls(self, cr, uid, ids, data, report_xml, context=None):
+        
+        if not context:
+            context = {}
+        context = context.copy()
+        rml_parser = self.parser(cr, uid, self.name2, context=context)
+        objs = self.getObjects(cr, uid, ids, context=context)
+        rml_parser.set_context(objs, data, ids, 'xls')
+
+        n = cStringIO.StringIO()
+        wb = xlwt.Workbook(encoding='utf-8')
+        print "aaaaaaaaaaaa",rml_parser.localcontext['objects']
+        self.generate_xls_report(rml_parser, data, rml_parser.localcontext['objects'], wb)
+        wb.save(n)
+        n.seek(0)
+
+        return (n.read(), 'xls')
+        
+    def _get_start_date(self, data):
+        if data.get('form', False) and data['form'].get('date', False):
+            return data['form']['date']
+        return ''
+    
+    
+    def _display_start_date(self, parser, data):
+        k = parser.formatLang(data['form']['date'], date=True)
+        if k:
+            k = '%s' % (k)
+        return k
+    
+    def _get_journal(self,data):
+        return '%s' % data['form']['period'][1]
+    
+    
+    def generate_xls_report(self, parser, data, obj, wb):
+        c = parser.localcontext['company']
+        ws = wb.add_sheet(('Laporan Piutang Per Konsumen'))
+        ws.panes_frozen = True
+        ws.remove_splits = True
+        ws.portrait = 0 # Landscape
+        ws.fit_width_to_pages = 1
+        ws.col(1).width = len("ABCDEFG")*1024
+        print "data",data['form']
+        cols_specs = [
+                # Headers data
+#                 ('TglTerima',  1, 80, 'text',
+#                     lambda x, d, p: 'Tanggal Terima'),
+                ('Title',  11, 0, 'text',
+                    lambda x, d, p: 'Installments Report'),
+                ('Kosong', 11, 0, 'text',
+                    lambda x, d, p: ' '),
+                (' ', 1, 0, 'text',
+                    lambda x, d, p: ' '),
+                ('Periode', 11, 0, 'text',
+                    lambda x, d, p: 'Periode : '+ parser._get_periode(d)+' - '+parser._get_periode_to(d)),
+                ('Terima', 1, 80, 'text',
+                    lambda x, d, p: parser._get_tanggal(x['id'])),             
+                ('Customer', 1, 120, 'text',
+                    lambda x, d, p: parser._get_customer(x['id'])),
+                ('Keterangan', 1, 80, 'text',
+                    lambda x, d, p: parser._get_keterangan(x['id'])),
+                ('Tower', 1, 60, 'text',
+                    lambda x, d, p:  parser._get_tower(x['id'])),
+                ('Unit', 1, 70, 'text',
+                    lambda x, d, p:  parser._get_no_unit(x['id'])),
+                ('Cicilan', 1, 100, 'number',
+                    lambda x, d, p: parser._get_cicilan(x['id'])),
+                
+                ('GRAND TOTAL'  , 7, 0, 'text',
+                    lambda x, d, p: 'Total Pemasukan'),      
+                ('Grand'  , 1, 80, 'number',
+                    lambda x, d, p: x['grand'] or 0.0),
+                     
+        ]
+        
+
+        row_hdr0 = self.xls_row_template(cols_specs, ['Title'])
+        row_hdr1 = self.xls_row_template(cols_specs, ['Periode'])
+
+        row_first = self.xls_row_template(cols_specs,[' ',' ',' ',' ','Lokasi',' '])
+#        row_third = self.xls_row_template(cols_specs,['GRAND TOTAL','Grand'])
+        row_third = self.xls_row_template(cols_specs,['Title'])
+        row_fourth = self.xls_row_template(cols_specs,['Periode'])
+
+        row_second = self.xls_row_template(cols_specs,['Terima','Customer','Keterangan','Tower','Unit','Cicilan'])
+
+        hdr_style = xlwt.easyxf('pattern: pattern solid, fore_color gray25;')
+        row_normal_style=  xlwt.easyxf(num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_style = xlwt.easyxf('font: bold on;',num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_top_style = xlwt.easyxf('font: bold on;borders: top thin ;',num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_bottom_style = xlwt.easyxf('font: bold on;borders: bottom thin;',num_format_str='#,##0.00;(#,##0.00)')
+        
+
+        tittle_style = xlwt.easyxf('font: height 240, name Arial Black, colour_index black, bold on; align: wrap on, vert centre, horiz center; pattern: pattern solid, fore_color white;')
+        subtittle_left_style = xlwt.easyxf('font: name Arial, colour_index brown, bold on, italic on; align: wrap on, vert centre, horiz right; pattern: pattern solid, fore_color white;')
+        subtittle_right_style = xlwt.easyxf('font: name Arial, colour_index brown, bold on, italic on; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        subtittle_top_and_bottom_style = xlwt.easyxf('font: height 240, name Arial, colour_index black, bold off, italic on; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        blank_style = xlwt.easyxf('font: height 650, name Arial, colour_index brown, bold off; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        normal_style = xlwt.easyxf('font: height 240, name Arial, colour_index black, bold off; align: wrap on, vert centre, horiz left;')
+        total_style = xlwt.easyxf('font: height 200, name Arial, colour_index black, bold on, italic on; align: wrap on, vert centre;pattern: pattern solid, fore_color gray25;', num_format_str='#,##0.00;(#,##0.00)')
+        total_style1 = xlwt.easyxf('font: height 200, name Arial, colour_index black, bold on, italic on; align: wrap on, vert centre, horiz center;;pattern: pattern solid, fore_color gray25;', num_format_str='#,##0.00;(#,##0.00)')
+        ## Style variable End
+        
+        # Write headers
+        self.xls_write_row(ws, None, data, parser, 0, row_hdr0, tittle_style)
+        
+        
+#         if data['form']['all']:
+        self.xls_write_row(ws, None, data, parser, 1, row_hdr1, subtittle_right_style)
+
+#         self.xls_write_row(ws, None, data, parser, 3, row_hdr2, subtittle_right_style)
+        
+#         if data['form']['with_price'] == 'yes':
+        self.xls_write_row_header(ws, 4, row_first, total_style1, set_column_size=True)
+        self.xls_write_row_header(ws, 5, row_second, total_style, set_column_size=True)
+        self.xls_write_row_header(ws, 2, row_third, total_style, set_column_size=True)
+        self.xls_write_row_header(ws, 3, row_fourth, total_style, set_column_size=True)
+
+#             else:
+#                 self.xls_write_row_header(ws, 3, row_balance_non, total_style, set_column_size=True)
+       
+        
+        row_count = 6
+        sum = 0.0
+        for dt in parser._get_data_all(data):
+            sum += parser._get_cicilan(dt['id'])
+            self.xls_write_row(ws, dt, data, parser, row_count, row_second, row_normal_style)
+            row_count+=1
+        row_count+=1
+        self.xls_write_row(ws, {'grand':sum}, data, parser, row_count, row_third, total_style)
+
+        
+        pass
+#     print "asdaa"
+from netsvc import Service
+del Service._services['report.installment.lap.xls']
+report_installment_xls(
+        'report.installment.lap.xls',
+        'lap.installment',
+        'addons/ad_laporan_installment/report/installment_rep.mako',
+        parser=ReportInstallment,
+        header=True)
+
+

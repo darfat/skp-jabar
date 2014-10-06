@@ -1,0 +1,363 @@
+from report import report_sxw
+#from osv import osv
+#from sets import Set
+import pooler
+#import time
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import time
+from operator import itemgetter
+from itertools import groupby
+from report_webkit import webkit_report
+
+from osv import fields, osv
+from tools.translate import _
+import netsvc
+import tools
+import decimal_precision as dp
+import logging
+
+class ReportArkonsumen(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context=None):
+        super(ReportArkonsumen, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+#             'time': time,
+            'get_object' : self._get_object,
+            'counter':self.counter,
+            'get_periode' : self._get_periode,
+            'get_periode_to' : self._get_periode_to,
+            'get_stock' : self._get_stock,
+            'get_current_date' : self._get_current_date,
+            'get_sequnce_number':self._get_sequnce_number,
+            'get_payment_date':self._get_payment_date,	
+        })
+        
+    def _get_object(self,data):
+        obj_data=self.pool.get(data['model']).browse(self.cr,self.uid,[data['form']['id']])
+        return obj_data
+    def _get_periode(self,data):
+        datefrom = time.strftime('%d %B %Y', time.strptime(data['form']['dateFrom'],'%Y-%m-%d'))
+        return datefrom
+    
+    def _get_periode_to(self,data):
+	dateto = '-'	
+	if data['form']['dateTo']:
+           dateto = time.strftime('%d %B %Y', time.strptime(data['form']['dateTo'],'%Y-%m-%d'))
+	
+        return dateto
+    def _get_current_date(self):
+        current = time.strftime('%Y-%m-%d')
+        ttyme = datetime.fromtimestomp(time.mktime(time.strptime(data,"%Y-%m-%d")))
+        current = tools.ustr(ttyme.strftime('%e %B %Y'))
+        return current
+
+    def counter(self,data):
+        pc=data.print_counter
+        id=data.id
+#         if data.print_counter :
+#             query= "UPDATE downpayment SET print_counter = 'printed'"#(print_counter + 1) where id='"+str(id)+"'"
+#         else:
+#             query= "UPDATE downpayment SET print_counter = ''"#'1' where id='"+str(id)+"'"
+        query= "UPDATE downpayment SET print_counter = 'printed' where id='"+str(id)+"'"
+        self.cr.execute(query)
+
+            
+     
+    def _get_data_all(self,data,context=None):
+       # print "Filter : ",data
+       # print "form",data
+        inst_obj = self.pool.get('installment.line')
+       # print "Partner : ",data['form']['partner_id']
+       # print "TOWER : ",data['form']['tower']
+	if data['form']['dateTo']:
+
+         if data['form']['tower']and data['form']['partner_id']:
+           inst_ids = inst_obj.search(self.cr, self.uid, [('date','>=',data['form']['dateFrom']),('date','<=',data['form']['dateTo']),('sale_id','!=',None),('status','in',('manual','invoiced')),('partner_id','=',data['form']['partner_id'][0]),('property_id.tower_id.name','=',data['form']['tower'])],
+                                                    order='partner_id,date')
+         elif data['form']['partner_id'] and not data['form']['tower']:
+           inst_ids = inst_obj.search(self.cr, self.uid, [('date','>=',data['form']['dateFrom']),('date','<=',data['form']['dateTo']),('sale_id','!=',None),('status','in',('manual','invoiced')),('partner_id','=',data['form']['partner_id'][0])],
+                                                      order='partner_id,date')
+	 elif data['form']['tower'] and not data['form']['partner_id']:
+#	   print "Filter by Tower ", data['form']['tower']
+           inst_ids = inst_obj.search(self.cr, self.uid, [('date','>=',data['form']['dateFrom']),('date','<=',data['form']['dateTo']),('sale_id','!=',None),('status','in',('manual','invoiced')),('property_id.tower_id.name','=',data['form']['tower'])],
+                                                      order='partner_id,date')
+	 else:
+           inst_ids = inst_obj.search(self.cr, self.uid, [('date','>=',data['form']['dateFrom']),('date','<=',data['form']['dateTo']),('sale_id','!=',None)],('status','in',('manual','invoiced')),
+                                                      order='partner_id')
+	else:
+
+
+	 if data['form']['tower']and data['form']['partner_id']:
+           inst_ids = inst_obj.search(self.cr, self.uid, [('date','>=',data['form']['dateFrom']),('sale_id','!=',None),('status','in',('manual','invoiced')),('partner_id','=',data['form']['partner_id'][0]),('property_id.tower_id.name','=',data['form']['tower'])],
+                                                    order='partner_id,date')
+	 elif data['form']['partner_id'] and not data['form']['tower']:
+           inst_ids = inst_obj.search(self.cr, self.uid, [('date','>=',data['form']['dateFrom']),('sale_id','!=',None),('status','in',('manual','invoiced')),('partner_id','=',data['form']['partner_id'][0])],
+                                                      order='partner_id,date')
+	 elif data['form']['tower'] and not data['form']['partner_id']:
+#	   print "Filter by Tower ", data['form']['tower']
+           inst_ids = inst_obj.search(self.cr, self.uid, [('date','>=',data['form']['dateFrom']),('sale_id','!=',None),('status','in',('manual','invoiced')),('property_id.tower_id.name','=',data['form']['tower'])],
+                                                      order='partner_id,date')
+	 else:
+           inst_ids = inst_obj.search(self.cr, self.uid, [('date','>=',data['form']['dateFrom']),('sale_id','!=',None)],('status','in',('manual','invoiced')),
+                                                      order='partner_id')
+
+       
+        result = inst_obj.browse(self.cr, self.uid, inst_ids)
+        
+
+        return result  
+          
+    def _get_sequnce_number(self):
+        
+        seq_num=self.pool.get('ir.sequence').get(self.cr, self.uid, 'report.arkonsumen') or '-'
+
+        return seq_num 
+
+    def _get_lantai(self,ref,context=None):
+        inst_obj = self.pool.get('installment.line')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        if inst_ids:
+            return inst_ids.property_id.floor_id.name
+        return ''	
+
+    def _get_unit(self,ref,context=None):
+        inst_obj = self.pool.get('installment.line')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        if inst_ids:
+            return inst_ids.property_id.name
+        return ''
+	
+    def _get_luas(self,ref,context=None):
+        inst_obj = self.pool.get('installment.line')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        if inst_ids:
+            return inst_ids.property_id.land_area
+        return ''    
+
+    def _get_nama(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.partner_id.name 
+        return '' 
+
+    def _get_alamat(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.partner_id.alamat 
+        return '' 
+  
+    def _get_sku(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.sale_id.name 
+        return '' 
+
+    def _get_booking(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.sale_id.booking_fee 
+        return '' 
+
+    def _get_func_sku(self,ref,context=None):
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+	bulan = ""        
+	tower = inst_ids.property_id.tower_id.name 
+	tower_code=tower[-1:] 
+	tglorder = inst_ids.sale_id.date_order
+	tahun = tglorder[0:4]
+	if tglorder[5:7] == '10':
+	    bulan = "X"
+	elif tglorder[5:7] == '11':
+	    bulan = "XI"
+	elif tglorder[5:7] == '12':
+	    bulan = "XII"
+	elif tglorder[5:7] == '01':
+	    bulan = "I"
+	elif tglorder[5:7] == '02':
+	    bulan = "II"
+	elif tglorder[5:7] == '03':
+	    bulan = "III"
+	elif tglorder[5:7] == '04':
+	    bulan = "IV"
+	elif tglorder[5:7] == '05':
+	    bulan = "V"
+	elif tglorder[5:7] == '06':
+	    bulan = "VI"
+	elif tglorder[5:7] == '07':
+	    bulan = "VII"
+	elif tglorder[5:7] == '08':
+	    bulan = "VIII"
+
+        if inst_ids:
+            return inst_ids.sale_id.name + '/LRA-T' + tower_code + '/' + bulan + '/' + tahun
+								
+    def _get_alamat(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.partner_id.street2 
+        return '' 
+
+    def _get_npwp(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.partner_id.npwp 
+        return '' 
+
+    def _get_telp(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.partner_id.phone 
+        return ''
+
+    def _get_hargajual(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            if inst_ids.sale_id	 :
+                #print "Sale ID : ",inst_ids.sale_id.id
+            	return inst_ids.sale_id.amount_untaxed or ''
+        return '' 
+
+    def _get_ppn(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.sale_id.amount_tax 
+        return '' 
+
+    def _get_total_hargajual(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.sale_id.total_amount+inst_ids.sale_id.booking_fee
+        return '' 
+
+    def _get_cara_byr(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids.sale_id.payment_plan == 'cash' : 
+            return 'Cash'
+
+	elif inst_ids.sale_id.payment_plan == 'cash_cicilan' :
+	    cara = str(inst_ids.sale_id.installments.qty)	
+            return 'DP-'  + inst_ids.sale_id.dp_percent_sel.name + ',Angs -' + cara + 'x'  
+        elif inst_ids.sale_id.payment_plan == 'kpa' :              
+            return 'KPA/KPR'
+	else :
+	    return 'OTHER'
+        return ''
+
+    def _get_tanggal(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.date
+        return ''
+ 
+    def _get_payment_date(self,ref, context=None):
+        inst_obj = self.pool.get('installment.line')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        if inst_ids:
+            inv=inst_ids.invoice_line
+            if inv:
+                if inv.payment_ids :
+                    obj_voucher = self.pool.get('account.voucher')
+                    move_ids = []
+                    for mline in inv.payment_ids:
+                        move_id = mline.move_id.id
+                        move_ids.append(move_id)
+                        
+                    voucher_ids = obj_voucher.search(self.cr, self.uid, [('move_id', 'in', move_ids)],order='date', limit=1)
+                    voucher_id = voucher_ids[0]
+                    inv_voucher_obj = obj_voucher.browse(self.cr, self.uid, voucher_id, context=context)
+                    paid_date = inv_voucher_obj.date
+                    return paid_date;
+               
+        return '' 
+
+    def _get_angsuran(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.name 
+        return '' 	 
+
+    def _get_jumlah_angsuran(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.sale_amount 
+        return '' 
+
+    def _get_jumlah_bayar(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.paid 
+        return '' 
+
+    def _get_telat(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.days_penalty 
+        return '' 
+
+
+    def _get_sisa(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.sale_id.total_amount+inst_ids.sale_id.booking_fee-inst_ids.sale_id.total_paid
+        return '' 
+
+    def _get_denda(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.penalty 
+        return '' 
+
+    def _get_agent(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.sale_id.groups_agent_id.name 
+        return ''
+
+    def _get_hpagent(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.sale_id.groups_agent_id.phone
+        return ''
+
+    def _get_leader(self,ref,context=None): 
+        inst_obj = self.pool.get('installment.line') 
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref) 
+        if inst_ids: 
+            return inst_ids.sale_id.groups_agent_id.agent_template.team
+        return ''
+
+    def _get_stock(self, data, context=None):
+        print "form",data
+        sale_obj = self.pool.get('installment.line')
+        inst_ids = inst_obj.search(self.cr, self.uid, [('state','=','paid'),('date','>=',data['form']['dateFrom']),('date','<=',data['form']	['dateTo']),('partner_id','=',data['form']['partner_id'][0])])
+        result = sale_obj.browse(self.cr, self.uid, sale_ids)
+        print "result",result
+            
+        return result
+    
+    
+report_sxw.report_sxw('report.arkonsumen.lap.xls',
+                        'lap.arkonsumen', 
+                        'addons/ig_ar_konsumen/report/arkonsumen_rep.mako', parser=ReportArkonsumen)
+# report_sxw.report_sxw('report.penjualan.form', 'report.keuangan', 'addons/ad_laporan_keuangan/report/salesreport.mako', parser=ReportKeu)

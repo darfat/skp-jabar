@@ -1,0 +1,50 @@
+
+
+import time
+import netsvc
+# from report import report_sxw
+from tools.translate import _
+import tools
+from datetime import datetime, timedelta
+from osv import fields, osv
+# from report import report_sxw
+from dateutil.relativedelta import relativedelta
+
+
+import decimal_precision as dp
+
+class report_kwitansi(osv.osv_memory):
+    _name = "lap.kwitansi"
+    _columns = {
+ 	#'dp_line' : fields.one2many('downpayment.line', 'dp_id', 'Lines', states={'draft':[('readonly', False)]}),
+        #'journal_id': fields.many2one('account.journal', 'Journal'),
+	#'partner_id': fields.many2one('res.partner', 'Partner', change_default=1, required=True ,readonly=True, states={'draft':[('readonly',False)]}),
+        'partner_id': fields.many2one('res.partner', 'Partner'),
+        'type': fields.selection([('xls','Excel')],'File Type',required=True),
+    }
+    def compute_rep(self, cr, uid, ids, context={}):
+        value = self.read(cr, uid, ids)[0]
+        print '-------------------------------',value
+#        if not value['location_id']:
+#            raise osv.except_osv(('Perhatian !'), ('Silahkan memilih lokasi terlebih dahulu'))
+#         data = self.read(cr, uid, ids)[0]
+        datas = {
+             'ids': context.get('active_ids',[]),
+             'model': 'lap.kwitansi',
+             'form': value
+                 }
+#         if value['type']=='pdf':
+#             return {
+#                 'type': 'ir.actions.report.xml',
+#                 'report_name': 'penjualan.form',
+#                 'report_type': 'webkit',
+#                 'datas': datas,
+#                 }
+#         else:
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'kwitansi.lap.xls',
+            'report_type': 'webkit',
+            'datas': datas,
+            }
+report_kwitansi()

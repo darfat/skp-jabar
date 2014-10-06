@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+	<menuitem name="Data Kepegawaian"
+            id="hr.menu_hr_root" 
+            sequence="2"/>
+	<menuitem id="hr.menu_hr_main" parent="hr.menu_hr_root" name="Kepegawaian" sequence="0"  groups="project.group_project_manager,df_project.group_project_appeal,df_project.group_project_evaluated_bkd" />
+	<record id="view_data_pegawai_filter_custom" model="ir.ui.view">
+            <field name="name">hr.employee.list.select</field>
+            <field name="model">hr.employee</field>
+            <field name="arch" type="xml">
+                <search string="Employees">
+                    <field name="name" string="Nama Pegawai"/>
+                    <field name="nip" string="NIP"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Bidang" icon="terp-personal+" domain="[]" context="{'group_by':'department_id'}"/>
+                        <filter string="Jabatan" icon="terp-gtk-select-all" domain="[]" context="{'group_by':'job_id'}"/>
+						<filter string="Eselon" icon="terp-personal+" domain="[]" context="{'group_by':'eselon_id'}"/>
+						<filter string="Tipe Jabatan" icon="terp-personal+" domain="[]" context="{'group_by':'job_type'}"/>
+						<filter string="Pejabat Penilai" icon="terp-personal+" domain="[]" context="{'group_by':'parent_id'}"/>
+						<filter string="Atasan Pejabat Penilai" icon="terp-personal+" domain="[]" context="{'group_by':'user_id_banding'}"/>
+                        <filter string="OPD" icon="terp-go-home" domain="[]" context="{'group_by':'company_id'}" />
+                    </group>
+                </search>
+             </field>
+         </record>
+      <record id="pns_open_view_employee_list_my" model="ir.actions.act_window">
+            <field name="name">Employees</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" eval="False"/>
+            <field name="inherit_id" ref="hr.open_view_employee_list_my"/>
+            <field name="search_view_id" ref="view_data_pegawai_filter_custom"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to add a new employee.
+              </p><p>
+                With just a quick glance on the OpenERP employee screen, you
+                can easily find all the information you need for each person;
+                contact data, job position, availability, etc.
+              </p>
+            </field>
+        </record>
+	<!-- ========================================= Employee Tree =============================================== -->
+		<menuitem action="pns_open_view_employee_list_my" id="hr.menu_open_view_employee_list_my" sequence="3" name="Pegawai" parent="hr.menu_hr_main"/>
+		<record id="view_pns_employee_tree" model="ir.ui.view">
+            <field name="name">hr.employee.pns.tree</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_tree"/>
+            <field name="arch" type="xml">
+	        <xpath expr="/tree/field[@name='name']/.." position="attributes">
+                       	<attribute name="colors">red:status_data_atasan_pegawai=='False';</attribute>
+           	</xpath>   
+               <xpath expr="/tree/field[@name='name']" position="before">
+                	<field name="nip"/>
+                	<field name="status_data_pegawai" invisible="True"/>
+					<field name="status_data_atasan_pegawai" invisible="True"/>		
+                </xpath>
+               <xpath expr="/tree/field[@name='parent_id']" position="attributes">
+                	<attribute name="string">Pejabat Penilai</attribute>   
+                </xpath>
+                <xpath expr="/tree/field[@name='company_id']" position="attributes">
+                	<attribute name="string">Unit Kerja / OPD</attribute>
+                	<attribute name="invisible">False</attribute>      
+					<attribute name="groups">project.group_project_user</attribute>
+                </xpath>
+                <xpath expr="/tree/field[@name='job_id']" position="attributes">
+                	<attribute name="string">Jabatan</attribute>   
+                </xpath>
+                <xpath expr="/tree/field[@name='company_id']" position="after">
+                	<field name="biro_id"/>              
+                </xpath>
+                <xpath expr="/tree/field[@name='job_id']" position="after">
+                	<field name="eselon_id"/>           
+					<field name="job_type"/>
+					<field name="golongan_id"/>
+                </xpath>
+                <xpath expr="/tree/field[@name='parent_id']" position="after">
+                	<field name="user_id_banding"  />           
+                </xpath>
+                <xpath expr="/tree/field[@name='work_phone']" position="attributes">
+            			<attribute name="invisible">True</attribute>   
+				</xpath>
+				<xpath expr="/tree/field[@name='work_email']" position="attributes">
+            			<attribute name="invisible">True</attribute>   
+				</xpath>
+				
+            </field>
+        </record>
+        <!-- ========================================= Employee Form =============================================== -->
+ 		<record id="view_pns_employee_form_view" model="ir.ui.view">
+            <field name="name">hr.employee.pns.form</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                 <xpath expr="/form/sheet/div[@name='button_box']" position="after">
+                 	<button name="update_target_and_realisasi"  string="Set Ulang Data Atasan Pada Kegiatan" type="object"  />
+                 </xpath>
+				<xpath expr="/form/sheet/div[@class='oe_title']/label[@for='category_ids']" position="before">
+                       <label for="nip" class="oe_edit_only"/>
+                       <h2><field name="nip" placeholder="NIP..."/> </h2>       
+                 </xpath>
+               	
+				<xpath expr="/form/sheet/div[1]" position="after">
+					<group col="2">
+						<group>
+						<field name="tempat_lahir" placeholder="Tempat Lahir..." /> 						
+						<field name="tanggal_lahir" />
+						</group>
+						<group>
+						<field name="eselon_id"/>					
+						 <field name="job_type" invisible="False"/> 
+						</group>
+						
+						<group>
+						<field name="agama"  />
+						<field name="is_kepala_opd"  /> 	 			
+
+						</group>
+					</group>
+				</xpath>
+				
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[@string='Contact Information']" position="attributes">
+					<attribute name="invisible">True</attribute> 
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[@string='Position']/field[@name='department_id']" position="before">
+					<field name="biro_id" />
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[@string='Position']/field[@name='department_id']" position="attributes">
+					<attribute name="string">Bidang/Sekertariat/UPTD/B</attribute> 
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[@string='Position']/field[@name='job_id']" position="attributes">
+					<attribute name="string">Jabatan</attribute>
+					<attribute name="required">True</attribute>  
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[@string='Position']/field[@name='parent_id']" position="attributes">
+					<attribute name="string">Pejabat Penilai</attribute> 
+					<attribute name="required">True</attribute>
+					<attribute name="on_change">atasan_change(parent_id)</attribute>
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[@string='Position']/field[@name='parent_id']" position="before">
+						<field name="golongan_id" />  
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[@string='Position']/field[@name='parent_id']" position="before">
+						<field name="parent_id_nip" />  
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[@string='Position']/field[@name='parent_id']" position="after">
+						<field name="user_id_banding_nip" />
+						<field name="user_id_banding" string="Atasan Pejabat Penilai" required="True" on_change="atasan_banding_nip_change(user_id_banding)" /> 
+
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[@string='Position']/field[@name='coach_id']" position="attributes">
+					<attribute name="invisible">True</attribute> 
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[3]" position="attributes">
+					<attribute name="string">Lainnya</attribute> 
+				</xpath>				
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[3]/field[@name='company_id']" position="attributes">
+					<attribute name="string">OPD</attribute>
+					<attribute name="required">True</attribute> 
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[3]/field[@name='company_id']" position="after">
+					<field name="nama_sekolah"/>
+					<field name="jurusan"/>
+					<field name="diklat_kepemimpinan"/>
+					<field name="diklat_fungsional"/>
+					<field name="alamat_rumah"/>	
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Public Information']/group/group[3]/field[@name='user_id']" position="attributes">
+					<attribute name="required">True</attribute> 
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Personal Information']/group/group[@string='Citizenship &amp; Other Info']" position="attributes">
+					<attribute name="invisible">True</attribute> 
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[@string='Personal Information']/group/group[@string='Contact Information']" position="attributes">
+					<attribute name="invisible">True</attribute> 
+				</xpath>
+				
+				<xpath expr="/form/sheet/notebook/page[@string='Personal Information']/group/group[@string='Birth']" position="attributes">
+						<attribute name="invisible">True</attribute> 
+				</xpath>
+				
+				<xpath expr="/form/sheet/notebook/page[@string='Personal Information']/group/group[@string='Status']" position="after">
+					 <group string="Pendidikan">
+                            <field name="gelar_depan"/>
+                            <field name="gelar_blk"/>                            
+                     </group> 
+				</xpath>
+				
+			</field>
+		</record>
+
+		
+    <record model="ir.ui.view" id="hr.hr_kanban_view_employees">
+        <field name="name">HR - Employess Kanban</field>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="last_login"/>
+                <field name="status_data_pegawai"/>
+                <field name="status_data_atasan_pegawai"/>
+                <field name="user_id"/>
+                <templates>
+                    <t t-name="kanban-box" >
+                        <div class="oe_employee_vignette">
+                            <div class="oe_employee_image">
+                                <a type="open"><img t-att-src="kanban_image('hr.employee', 'image_medium', record.id.value)" class="oe_employee_picture"/></a>
+                            </div>
+                            <div class="oe_employee_details">
+                                <h4>
+                                    <a type="open"><field name="name"/><t t-if="record.login.raw_value"> [<field name="login"/>]</t></a>
+                                </h4>
+                                <ul>
+                                    <li id="last_login">
+                                        <span t-if="record.last_login.raw_value &amp;&amp; record.last_login.raw_value.is().today()" class="oe_kanban_button" style="font-size: 100%%">
+                                              <t t-esc="record.last_login.raw_value.toString('HH:mm')"/>
+                                        </span>
+                                    </li>
+                                   <li t-if="record.status_data_atasan_pegawai.raw_value" style="color:red;fonts:bold">Data Penilai Belum Lengkap </li>
+                                   <!--<li t-if="record.job_id.raw_value"><field name="job_id"/></li>-->
+                                   <li t-if="record.status_data_pegawai.raw_value" style="color:grey">Data Atribut Pegawai Belum Lengkap (Eselon,Tipe Jabatan...)</li>
+                                   <li t-if="record.login.raw_value" style="color:green">Login Aktif</li>
+                                    <!--
+                                    <li t-if="record.work_phone.raw_value">Tel: <field name="work_phone"/></li>
+                                    <li t-if="record.mobile_phone.raw_value">Mobile: <field name="mobile_phone"/></li>
+                                    <li t-if="record.work_email.raw_value"><a t-attf-href="mailto:#{record.work_email.value}"><field name="work_email"/></a></li>-->
+                                </ul>
+                            </div>
+                        </div>
+                        <script>
+                            $('.oe_employee_picture').load(function() { if($(this).width() > $(this).height()) { $(this).addClass('oe_employee_picture_wide') } });
+                        </script>
+                    </t>
+                </templates>
+            </kanban>
+
+        </field>
+    </record>
+
+	</data>
+</openerp>
+
+

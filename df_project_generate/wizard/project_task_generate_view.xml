@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+		
+       <!-- input -->
+		<record id="form_view_project_task_generate" model="ir.ui.view">
+            <field name="name">Generate Realisasi</field>
+            <field name="model">project.task.generate</field>
+            <field name="arch" type="xml">
+                <form string="Generate Realisasi" version="7.0">
+				<header>
+                        
+                      		<button name="generate_task_realisasi_bulanan" string="Generate" type="object" class="oe_highlight"/> 
+                      		OR
+                            <button special="cancel" string="Cancel" class="oe_link"/>
+                         
+                        
+                    </header>                                
+                <notebook>
+                    <page string="Data" >
+	                    <group>
+	                    	<field name="name"/>
+	                    	<field name="target_type_id"/>
+	                    	<field name="target_period_year"/>
+	                    	<field name="lama_kegiatan" invisible="False"/>
+							<field name="satuan_lama_kegiatan" invisible="False"/>
+							
+	                    </group>
+	                </page>
+	                <page string="Info Lainnya" >
+	                    <group>
+							<field name="date_start"/>	                    	                   
+	                    	
+							<field name="user_id"/>
+	                    	<field name="user_id_atasan"/>
+	                    	<field name="user_id_banding"/>
+	                    	<field name="user_id_bkd"/>
+	                    </group>
+	                </page>
+                    
+                 </notebook>
+                 </form>
+            </field>
+        </record>
+
+        <record id="action_view_project_task_generate" model="ir.actions.act_window">
+            <field name="name">Generate Realisasi</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">project.task.generate</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record> 
+		
+
+    </data>
+</openerp>

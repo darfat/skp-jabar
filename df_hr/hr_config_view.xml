@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+	<!-- ========================================= Employee Golonngan Tree =============================================== -->
+
+		<record id="view_hr_employee_golongan_tree" model="ir.ui.view">
+            <field name="name">hr.employee.golongan.tree</field>
+            <field name="model">hr.employee.golongan</field>
+            <field name="arch" type="xml">
+                <tree string="Golongan">
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+        <!-- ========================================= Employee Golonngan Form =============================================== -->
+ 		 <record id="view_hr_employee_golongan_form" model="ir.ui.view">
+            <field name="name">hr.employee.golongan.form</field>
+            <field name="model">hr.employee.golongan</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <form string="Golongan" version="7.0">
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="description"/>
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		<!-- ========================================= Employee Golonngan Menu =============================================== -->
+		 <record model="ir.actions.act_window" id="action_hr_golongan">
+            <field name="name">Golongan</field>
+            <field name="res_model">hr.employee.golongan</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!--<field name="search_view_id" ref="view_job_filter"/>
+            <field name="context">{"search_default_Current":1}</field>-->
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="hr.menu_hr_configuration" id="menu_hr_golongan" action="action_hr_golongan" sequence="7"/>
+		
+
+		
+<!-- ========================================= Employee Study Tree =============================================== -->
+
+		<record id="view_hr_employee_study_tree" model="ir.ui.view">
+            <field name="name">hr.employee.study.tree</field>
+            <field name="model">hr.employee.study</field>
+            <field name="arch" type="xml">
+                <tree string="Jurusan Pendidikan">
+                    <field name="name"/>                
+                </tree>
+            </field>
+        </record>
+        <!-- ========================================= Employee Study Form =============================================== -->
+ 		 <record id="view_hr_employee_study_form" model="ir.ui.view">
+            <field name="name">hr.employee.study.form</field>
+            <field name="model">hr.employee.study</field>
+            <field name="priority">21</field>
+            <field name="arch" type="xml">
+                <form string="Jurusan Pendidikan" version="7.0">
+                    <group col="4">
+                        <field name="name"/>
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		<!-- ========================================= Employee Study Menu =============================================== -->
+		 <record model="ir.actions.act_window" id="action_hr_study">
+            <field name="name">Jurusan Pendidikan</field>
+            <field name="res_model">hr.employee.study</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!--<field name="search_view_id" ref="view_job_filter"/>
+            <field name="context">{"search_default_Current":1}</field>-->
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="hr.menu_hr_configuration" id="menu_hr_study" action="action_hr_study" sequence="8"/>
+
+
+<!-- ========================================= Employee school Tree =============================================== -->
+
+		<record id="view_hr_employee_school_tree" model="ir.ui.view">
+            <field name="name">hr.employee.school.tree</field>
+            <field name="model">hr.employee.school</field>
+            <field name="arch" type="xml">
+                <tree string="Nama Sekolah">
+                    <field name="name"/>
+                    <field name="school_type"/>
+                </tree>
+            </field>
+        </record>
+        <!-- ========================================= Employee school Form =============================================== -->
+ 		 <record id="view_hr_employee_school_form" model="ir.ui.view">
+            <field name="name">hr.employee.school.form</field>
+            <field name="model">hr.employee.school</field>
+            <field name="priority">22</field>
+            <field name="arch" type="xml">
+                <form string="Nama Sekolah" version="7.0">
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="school_type"/>
+                        
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		<!-- ========================================= Employee school Menu =============================================== -->
+		 <record model="ir.actions.act_window" id="action_hr_school">
+            <field name="name">Nama Sekolah</field>
+            <field name="res_model">hr.employee.school</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!--<field name="search_view_id" ref="view_job_filter"/>
+            <field name="context">{"search_default_Current":1}</field>-->
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="hr.menu_hr_configuration" id="menu_hr_school" action="action_hr_school" sequence="9"/>
+		
+<!-- ========================================= Employee title Tree =============================================== -->
+
+		<record id="view_hr_employee_title_tree" model="ir.ui.view">
+            <field name="name">hr.employee.title.tree</field>
+            <field name="model">hr.employee.title</field>
+            <field name="arch" type="xml">
+                <tree string="Gelar Depan/Belakang">
+                    <field name="name"/>
+                    <field name="title_type"/>
+                </tree>
+            </field>
+        </record>
+        <!-- ========================================= Employee title Form =============================================== -->
+ 		 <record id="view_hr_employee_title_form" model="ir.ui.view">
+            <field name="name">hr.employee.title.form</field>
+            <field name="model">hr.employee.title</field>
+            <field name="priority">23</field>
+            <field name="arch" type="xml">
+                <form string="Nama Sekolah" version="7.0">
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="title_type"/>
+                        
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		<!-- ========================================= Employee title Menu =============================================== -->
+		 <record model="ir.actions.act_window" id="action_hr_title">
+            <field name="name">Gelar Depan/Belakang</field>
+            <field name="res_model">hr.employee.title</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!--<field name="search_view_id" ref="view_job_filter"/>
+            <field name="context">{"search_default_Current":1}</field>-->
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="hr.menu_hr_configuration" id="menu_hr_title" action="action_hr_title" sequence="10"/>
+		
+<!-- ========================================= Employee Eselon Tree =============================================== -->
+
+		<record id="view_hr_employee_eselon_tree" model="ir.ui.view">
+            <field name="name">hr.employee.eselon.tree</field>
+            <field name="model">hr.employee.eselon</field>
+            <field name="arch" type="xml">
+                <tree string="Eselon">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <!-- ========================================= Employee Eselon Form =============================================== -->
+ 		 <record id="view_hr_employee_eselon_form" model="ir.ui.view">
+            <field name="name">hr.employee.eselon.form</field>
+            <field name="model">hr.employee.eselon</field>
+            <field name="arch" type="xml">
+                <form string="Eselon" version="7.0">
+                    <group col="4">
+                       <field name="code"/>
+                    	<field name="name"/>
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		<!-- ========================================= Employee Eselon Menu =============================================== -->
+		 <record model="ir.actions.act_window" id="action_hr_eselon">
+            <field name="name">Eselon</field>
+            <field name="res_model">hr.employee.eselon</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <!--<field name="search_view_id" ref="view_job_filter"/>
+            <field name="context">{"search_default_Current":1}</field>-->
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="hr.menu_hr_configuration" id="menu_hr_eselon" action="action_hr_eselon" sequence="11"/>
+		
+		
+<!-- ========================================= Departeme Tree =============================================== -->
+
+		<record id="view_pns_department_tree" model="ir.ui.view">
+            <field name="name">hr.pns.department.tree</field>
+            <field name="model">hr.department</field>
+            <field name="inherit_id" ref="hr.view_department_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="/tree/field[@name='manager_id']" position="before">
+                	<field name="department_type"/>                	
+                </xpath>
+                <xpath expr="/tree/field[@name='manager_id']" position="attributes">
+                	<attribute name="invisible">True</attribute>                	
+                </xpath>
+               	<xpath expr="/tree/field[@name='manager_id']" position="attributes">
+                	<attribute name="string">Kepala Unit</attribute>
+                	<attribute name="invisible">True</attribute>                 	
+                </xpath>
+            </field>
+        </record>
+        
+		<record id="view_pns_department_form_view" model="ir.ui.view">
+            <field name="name">hr.pns.department.form</field>
+            <field name="model">hr.department</field>
+            <field name="inherit_id" ref="hr.view_department_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/group/field[@name='parent_id']" position="attributes">
+                	<attribute name="invisible">1</attribute>    
+                	<!-- <field name="bkd_auditor_id"/>-->
+                </xpath>
+               <xpath expr="/form/sheet/group/field[@name='company_id']" position="attributes">
+                	<attribute name="string">OPD</attribute> 
+					<attribute name="required">1</attribute>                  	
+                </xpath>
+                <xpath expr="/form/sheet/group/field[@name='manager_id']" position="attributes">
+                	<attribute name="invisible">1</attribute>                  	
+                </xpath>
+                <xpath expr="/form/sheet/group/field[@name='company_id']" position="after">
+                	<field name="department_type"/>    
+                	<!-- <field name="bkd_auditor_id"/>-->
+                </xpath>
+            </field>
+        </record>
+<!-- ========================================= JOB Form TREE =============================================== -->
+		<record id="view_pns_hr_job_tree" model="ir.ui.view">
+             <field name="name">hr.pns.job.tree</field>
+            <field name="model">hr.job</field>
+            <field name="inherit_id" ref="hr.view_hr_job_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="/tree/field[@name='department_id']" position="attributes">
+                	<attribute name="invisible">True</attribute>                	
+                </xpath>
+                <xpath expr="/tree/field[@name='name']" position="attributes">
+                	<attribute name="string">Jabatan</attribute>                	
+                </xpath>
+                <xpath expr="/tree/field[@name='company_id']" position="attributes">
+                	<attribute name="string">OPD</attribute>                	
+                </xpath>
+                 <xpath expr="/tree/field[@name='expected_employees']" position="attributes">
+                	<attribute name="invisible">True</attribute>                	
+                </xpath>
+                <xpath expr="/tree/field[@name='no_of_employee']" position="attributes">
+                	<attribute name="invisible">True</attribute>                	
+                </xpath>
+                <xpath expr="/tree/field[@name='no_of_recruitment']" position="attributes">
+                	<attribute name="invisible">True</attribute>                	
+                </xpath>
+                <xpath expr="/tree/field[@name='state']" position="attributes">
+                	<attribute name="invisible">True</attribute>                	
+                </xpath>
+            </field>
+        </record>
+		<record id="view_pns_hr_job_form" model="ir.ui.view">
+             <field name="name">hr.pns.job.form</field>
+            <field name="model">hr.job</field>
+            <field name="inherit_id" ref="hr.view_hr_job_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/header/button[@name='job_recruitement']" position="attributes">
+                	<attribute name="invisible">True</attribute>             
+                </xpath>
+                <xpath expr="/form/header/button[@name='job_open']" position="attributes">
+                	<attribute name="invisible">True</attribute>             
+                </xpath>
+				<xpath expr="/form/sheet/div/label[@for='name']" position="attributes">
+                	<attribute name="string">Jabatan</attribute>            
+                </xpath>
+                <xpath expr="/form/sheet/group[1]/group[1]" position="attributes">
+                	<attribute name="invisible">True</attribute>        
+                </xpath>
+                 <xpath expr="/form/sheet/div[3]" position="attributes">
+                	<attribute name="invisible">True</attribute>        
+                </xpath>
+                 <xpath expr="/form/sheet/group[1]/group[2]/field[@name='company_id']" position="attributes">
+                	<attribute name="string">OPD</attribute>
+                	<attribute name="required">1</attribute>                
+                </xpath>
+                 <xpath expr="/form/sheet/group[1]/group[2]/field[@name='company_id']" position="after">
+                	<field name="name_alias" placeholder="Alias Sesuai Dengan Standarisasi Nomenteratur"/>    
+                </xpath>
+                 <xpath expr="/form/sheet/group[1]/group[2]/field[@name='department_id']" position="attributes">
+                	<attribute name="invisible">True</attribute>  
+                </xpath>
+            </field>
+        </record>
+        
+	<!-- ========================================= Employee BIRO Tree =============================================== -->
+
+		<record id="view_hr_employee_biro_tree" model="ir.ui.view">
+            <field name="name">hr.employee.biro.tree</field>
+            <field name="model">hr.employee.biro</field>
+            <field name="arch" type="xml">
+                <tree string="Biro">
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+        <!-- ========================================= Employee BIRO Form =============================================== -->
+ 		 <record id="view_hr_employee_biro_form" model="ir.ui.view">
+            <field name="name">hr.employee.biro.form</field>
+            <field name="model">hr.employee.biro</field>
+            <field name="priority">20</field>
+            <field name="arch" type="xml">
+                <form string="Biro" version="7.0">
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="description"/>
+                    </group>                    
+                </form>
+            </field>
+        </record>
+		<record model="ir.actions.act_window" id="action_hr_biro">
+            <field name="name">Biro</field>
+            <field name="res_model">hr.employee.biro</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+           
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Tekan Tombol Create Untuk Menambahkan Data
+              </p>
+            </field>
+        </record>
+		<menuitem parent="hr.menu_hr_configuration" id="menu_hr_biro" action="action_hr_biro" sequence="13"/>
+        
+
+		<!--- USERs --> 
+		<record id="view_pns_res_users_form" model="ir.ui.view">
+             <field name="name">res.pns.user.form</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/div/label[@for='name']" position="attributes">
+                	<attribute name="string">Hanya Diisi Nama Lengkap (Tanpa Gelar)</attribute>             
+                </xpath>
+                <xpath expr="/form/sheet/div/h1/field[@name='name']" position="attributes">
+                	<attribute name="placeholder">Hanya Diisi Nama Lengkap (Tanpa Gelar)</attribute>             
+                </xpath>
+                <xpath expr="/form/sheet/div/label[@for='login']" position="attributes">
+                	<attribute name="string">Login (Harus Diisi NIP)</attribute>             
+                </xpath>
+            </field>
+        </record>
+
+	</data>
+</openerp>

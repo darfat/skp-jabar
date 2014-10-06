@@ -1,0 +1,164 @@
+from report import report_sxw
+#from osv import osv
+#from sets import Set
+import pooler
+#import time
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
+import time
+from operator import itemgetter
+from itertools import groupby
+from report_webkit import webkit_report
+
+from osv import fields, osv
+from tools.translate import _
+import netsvc
+import tools
+import decimal_precision as dp
+import logging
+
+class ReportFakturpajak(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context=None):
+        super(ReportFakturpajak, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+#             'time': time,
+            'get_object' : self._get_object,
+            'counter':self.counter,
+            'get_periode' : self._get_periode,
+            'get_periode_to' : self._get_periode_to,
+            'get_stock' : self._get_stock,
+            'get_terbilang':self._get_terbilang,
+            'get_sequnce_number':self._get_sequnce_number,
+        })
+        
+    def _get_object(self,data):
+        obj_data=self.pool.get(data['model']).browse(self.cr,self.uid,[data['form']['id']])
+        return obj_data
+
+    def counter(self,data):
+        pc=data.print_counter
+        id=data.id
+#         if data.print_counter :
+#             query= "UPDATE downpayment SET print_counter = 'printed'"#(print_counter + 1) where id='"+str(id)+"'"
+#         else:
+#             query= "UPDATE downpayment SET print_counter = ''"#'1' where id='"+str(id)+"'"
+        query= "UPDATE downpayment SET print_counter = 'printed' where id='"+str(id)+"'"
+        self.cr.execute(query)
+
+
+    def _get_periode(self,data):
+        datefrom = time.strftime('%d %B %Y', time.strptime(data['form']['dateFrom'],'%Y-%m-%d'))#data['form'].get(data['form']['dateFrom'], time.strftime('%d %B %Y'))#time.strftime(data['form']['dateFrom'],"%Y-%m-%d"))
+        #periode = tools.ustr(ttyme.strftime('%B %Y'))
+        return '%s' % datefrom
+    
+    def _get_periode_to(self,data):
+        dateto = time.strftime('%d %B %Y', time.strptime(data['form']['dateTo'],'%Y-%m-%d'))#data['form'].get(data['form']['dateTo'], time.strftime('%d %B %Y'))#time.strftime(data['form']['dateFrom'],"%Y-%m-%d"))
+        #periode = tools.ustr(ttyme.strftime('%B %Y'))
+        return '%s' % dateto
+    
+    
+    def _get_data_all(self,data,context=None):
+        print "Filter : ",data
+        inst_obj = self.pool.get('account.invoice')
+        inst_ids = inst_obj.search(self.cr, self.uid, [('partner_id','=',data['form']['partner_id'][0])],('installment_id','=',data['form']['installment_id']])
+     #   inst_ids = inst_obj.search(self.cr, self.uid, [('so_number','=','0306')])
+       
+        result = inst_obj.browse(self.cr, self.uid, inst_ids)
+        
+        print "result",result
+        return result  
+
+   
+    def _get_terbilang (self, ref,context=None):
+        print "num : ",ref,int(ref)
+        i = int(ref)
+        
+        from string import join,split,capwords
+        rib,rat,pul,bel,sat = ['','seribu ','ribu','juta','milyar'],['','seratus ','ratus'],['','sepuluh ','puluh'],['','sebelas ','belas'],['','satu','dua','tiga','empat','lima','enam','tujuh','delapan','sembilan']
+        riban,ratusan,puluhan,satuan =lambda i:(rib[i/1000]if (i/1000)<2 else sat[i/1000]+' '+rib[2]+' '),lambda i:(rat[i%1000/100]if (i%1000/100)<2 else sat[i%1000/100]+' '+rat[2]+' '),lambda i:(pul[1]if (i%100/10==1 and i%10==0) else bel[1]if (i%100/10==1 and i%10==1)else (sat[i%100/10]+' '+pul[2]+' ')if (i%100/10!=1)else(sat[i%10]+' '+bel[2]+' ')if (i%100/10==1 and i%10!=0)else ''),lambda i:sat[i%10]
+        nil_sat,nil_pul,nil_rat,nil_rib = lambda i:(satuan(i)if (i%100/10)!=1 else ''),lambda i:(puluhan(i)if (i%100/10)!=0 else ''),lambda i:(ratusan(i)if (i%1000/100)!=0 else ''),lambda i:(ribuan(i)if (i/1000)!=0 else '')
+        bilang = lambda i: nil_rib(i)+nil_rat(i)+nil_pul(i)+nil_sat(i)
+        pulrib = lambda i:(nil_pul(i/1000)+(nil_sat(i/1000)+' '+rib[2]if (i/1000)!=1 else rib[1])if ((i/10000)!=0 or (i/1000!=0)) else '')+' '+bilang(i%1000)
+        ratrib = lambda i:((nil_rat(i/1000)if (i/100000!=0)else '')+nil_pul(i/1000%100)+(nil_sat(i/1000%10)+(' 'if (i/1000%10!=0)else'')+rib[2]if (i/10000%10)!=1 else rib[2]if ((i/100000)!=0 or (i/10000!=0)) else '')+' '+bilang(i%1000)if (i/100000 or i/10000)else bilang(i))
+        sejuta = lambda i:(nil_sat(i/1000000)+' '+rib[3]if (i/1000000)!=0 else '')+(' '+ratrib(i%1000000)if (i%1000000!=0)else'')
+        puljut = lambda i:(nil_pul(i/1000000)+(nil_sat(i/1000000)+' '+rib[3]if (i/10000000!=1)else rib[3]if((i/10000000!=1)or(i/1000000!=1))else '')if ((i/10000000)!=0 or (i/1000000!=0)) else '')+' '+ratrib(i%1000000)
+        ratjut = lambda i:(nil_rat(i/1000000)if (i/1000000000)!=1 else '')+puljut(i%100000000)    
+        milyar = lambda i:((nil_sat(i/1000000000)+' '+rib[4]if (i/1000000000!=0)else '')+' '+ratjut(i%1000000000))if i!=0 else 'nol'
+        
+        return (capwords(join(split(milyar(i)),' '))if len(str(i))<=10 else 'Digit Limited for : %d' % len(str(i)))
+           
+    def _get_sequnce_number(self):
+        
+        seq_num=self.pool.get('ir.sequence').get(self.cr, self.uid, 'report.fakturpajak') or '-'
+
+        return seq_num 
+
+    def _get_tanggal(self,ref,context=None):
+        inst_obj = self.pool.get('account.invoice')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        if inst_ids:
+            return inst_ids.faktur_date
+        return ''
+
+    def _get_no(self,ref,context=None):
+        inst_obj = self.pool.get('account.invoice')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        if inst_ids:
+            return inst_ids.no_faktur_id
+        return ''
+  
+    def _get_customer(self,ref,context=None):
+        inst_obj = self.pool.get('account.invoice')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        if inst_ids:
+            return inst_ids.partner_id.name
+        return ''
+
+    def _get_alamat(self,ref,context=None):
+        inst_obj = self.pool.get('account.invoice')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        if inst_ids:
+            return inst_ids.partner_id.street2
+        return ''
+
+    def _get_npwp(self,ref,context=None):
+        inst_obj = self.pool.get('account.invoice')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        if inst_ids:
+            return inst_ids.partner_id.npwp
+        return ''
+
+    def _get_amount(self,ref,context=None):
+        inst_obj = self.pool.get('account.invoice')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        if inst_ids:
+            return inst_ids.amount_total
+        return ''
+
+    def _get_keterangan(self,ref,context=None):
+        inst_obj = self.pool.get('account.invoice')
+        inst_ids = inst_obj.browse(self.cr,self.uid, ref)
+        ret = ''
+        if inst_ids:
+            ret = inst_ids.faktur_description
+        return ret 
+
+	
+    
+    def _get_stock(self, data, context=None):
+        print "form",data
+        sale_obj = self.pool.get('account.invoice')
+
+#        sale_ids = sale_obj.search(self.cr, self.uid, [('date_order','>=',data['form']['dateFrom']),('date_order','<=',data['form']['dateTo'])])
+        inst_ids = inst_obj.search(self.cr, self.uid, [('partner_id','=',data['form']['partner_id'])])
+
+        result = sale_obj.browse(self.cr, self.uid, sale_ids)
+        print "result",result
+            
+        return result
+    
+    
+report_sxw.report_sxw('report.fakturpajak.lap.xls',
+                        'lap.fakturpajak', 
+                        'addons/ig_faktur_pajak/report/fakturpajak_rep.mako', parser=ReportFakturpajak)
+# report_sxw.report_sxw('report.penjualan.form', 'report.keuangan', 'addons/ad_laporan_keuangan/report/salesreport.mako', parser=ReportKeu)

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        
+		
+        
+
+        <record id="action_project_massive_propose_to_bkd_view" model="ir.ui.view">
+            <field name="name">project.massive.evaluate.bkd.form</field>
+            <field name="model">project.massive.evaluate.bkd</field>
+            <field name="arch" type="xml">
+                <form string="Ajukan Semua Kegiatan Ke BKD" version="7.0">
+                    <field name="notes"/>
+                    <p class="oe_grey">
+                        Silahkan isi alasan kenapa proses ini dilakukan.<br/>
+                        Proses ini akan merubah status semua kegiatan yang dipilih menjadi Verifikasi Oleh BKD
+                    </p>
+                    <footer>
+                        <button string="Ajukan" name="to_evalate_all_target" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_project_massive_propose_to_bkd"
+            multi="True"
+            key2="client_action_multi" name="Ajukan Target Ke BKD"
+            res_model="project.massive.evaluate.bkd" src_model="project.project"
+            view_mode="form" target="new" view_type="form" />
+        
+
+		<record id="action_project_massive_verify_view" model="ir.ui.view">
+            <field name="name">project.massive.form</field>
+            <field name="model">project.massive</field>
+            <field name="arch" type="xml">
+                <form string="Verifikasi Semua Kegiatan" version="7.0">
+                    <p class="oe_grey">
+                        Proses massive ini akan memproses semua kegiatan.
+                    	Semua kegiatan diverifikasi dan proses penilaian prestasi kerja pegawai selesai.
+                    	Yakinkan semua data yang dipilih sudah benar.
+                    </p>
+                    <footer>
+                        <button string="Selesai" name="verify_all_target" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_project_massive_verify"
+            multi="True"
+            key2="client_action_multi" name="Verifikasi Target"
+            res_model="project.massive" src_model="project.project"
+            view_mode="form" target="new" view_type="form" />
+        
+       <record id="action_project_massive_accept_revision_view" model="ir.ui.view">
+            <field name="name">project.massive.accept.revision.form</field>
+            <field name="model">project.massive.accept.revision</field>
+            <field name="arch" type="xml">
+                <form string="Terima Semua Pengajuan Revisi Target" version="7.0">
+                    <p class="oe_grey">
+                        Proses massive ini akan memproses semua kegiatan.
+                    	Semua kegiatan yang diterima ini , status nya akan berubah menjadi REVISI TARGET.
+                    	Proses koreksi yang dilakukan pegawai selama revisi target sama halnya ketika target status nya BARU.
+                    </p>
+                    <footer>
+                        <button string="Terima Revisi" name="accept_all_revision" type="object" default_focus="1" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <act_window id="action_project_massive_accept_revision"
+            multi="True" view_id="action_project_massive_accept_revision_view"
+            key2="client_action_multi" name="Terima Pengajuan Revisi"
+            res_model="project.massive.accept.revision" src_model="project.project"
+            view_mode="form" target="new" view_type="form" />
+    </data>
+</openerp>

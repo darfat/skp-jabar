@@ -1,0 +1,226 @@
+# -*- coding: utf-8 -*-
+# Copyright 2010 Thamini S.à.R.L    This software is licensed under the
+# GNU Affero General Public License version 3 (see the file LICENSE).
+
+import time
+import xlwt
+from ad_account_optimization.report.report_engine_xls import report_xls
+from ad_laporan_kwitansi.report.kwitansi_rep import ReportKwitansi
+
+import cStringIO
+from xlwt import Workbook, Formula
+from tools.translate import _
+
+
+
+class report_kwitansi_xls(report_xls):
+    no_ind = 0
+    
+    def get_no_index(self):
+        self.set_no_index()
+        return self.no_ind
+    def set_no_index(self):
+        self.no_ind += 1
+        return True
+    
+    def create_source_xls(self, cr, uid, ids, data, report_xml, context=None):
+        
+        if not context:
+            context = {}
+        context = context.copy()
+        rml_parser = self.parser(cr, uid, self.name2, context=context)
+        objs = self.getObjects(cr, uid, ids, context=context)
+        rml_parser.set_context(objs, data, ids, 'xls')
+
+        n = cStringIO.StringIO()
+        wb = xlwt.Workbook(encoding='utf-8')
+        print "aaaaaaaaaaaaaaaa",rml_parser.localcontext['objects']
+        self.generate_xls_report(rml_parser, data, rml_parser.localcontext['objects'], wb)
+        wb.save(n)
+        n.seek(0)
+
+        return (n.read(), 'xls')
+        
+    def _get_start_date(self, data):
+        if data.get('form', False) and data['form'].get('date', False):
+            return data['form']['date']
+        return ''
+    
+    
+    def _display_start_date(self, parser, data):
+        k = parser.formatLang(data['form']['date'], date=True)
+        if k:
+            k = '%s' % (k)
+        return k
+    
+    def _get_journal(self,data):
+        return '%s' % data['form']['period'][1]
+    
+    
+    def generate_xls_report(self, parser, data, obj, wb):
+        c = parser.localcontext['company']
+        ws = wb.add_sheet(('Tanda Terima Sementara'))
+        ws.panes_frozen = True
+        ws.remove_splits = True
+        ws.portrait = 0 # Landscape
+        ws.fit_width_to_pages = 1
+        ws.col(1).width = len("ABCDEFG")*1024
+        print "data",data['form']
+        cols_specs = [
+                # Headers data	
+                ('Title',  8, 0, 'text',
+                    lambda x, d, p: 'TANDA TERIMA'),
+                ('Kosong', 8, 0, 'text',
+                    lambda x, d, p: ' '),
+		(' ', 1, 0, 'text',
+                    lambda x, d, p: ' '),
+		('Titik2',1,0, 'text',
+		    lambda x, d, p: ':'),
+
+                ('No',6 , 0, 'text',
+                    lambda x, d, p: 'No       '),
+                ('Number',1 , 0, 'text',
+                    lambda x, d, p: parser._get_no(x['id'])),
+                ('Tanggal',6, 0, 'text',
+	            lambda x, d, p: 'Tanggal'),
+                ('Date',1, 0, 'text',
+	            lambda x, d, p: parser._get_tanggal(x['id'])),
+
+                ('TelahTerimadari',2, 0, 'text',
+                    lambda x, d, p: 'Telah Terima dari'),
+                ('Nama', 2, 0, 'text',
+                    lambda x, d, p: 'Nama                                                            :'),
+                ('Name', 5, 25, 'text',
+                    lambda x, d, p: parser._get_customer(x['id'])),
+
+                ('UangSejumlah', 2, 0, 'text',
+		    lambda x, d, p: 'Uang Sejumlah                                              :'),
+                ('Amount', 5, 35, 'text',
+		    lambda x, d, p: parser._get_amount(x['id'])),
+
+		('Terbilang', 2, 0, 'text',
+                    lambda x, d, p: 'Terbilang                                                       :'),
+                ('State', 5, 25, 'text',
+                    lambda x, d, p: parser._get_terbilang(parser._get_amount(x['id']))),
+
+                ('Keterangan', 2, 0, 'text',
+                    lambda x, d, p: 'Keterangan                                                    :'),
+		('Ket', 5, 25, 'text',
+                    lambda x, d, p: parser._get_keterangan(x['id'])),
+
+                ('Berupa', 2, 0, 'text',
+                    lambda x, d, p: 'Berupa                                                          :'),
+                ('Dll', 5, 25, 'text',
+                    lambda x, d, p: parser._get_payment(x['id'])),
+
+                ('YangMenerima', 8, 0, 'text',
+                    lambda x, d, p: 'Yang Menerima,       '),
+                ('Garis', 8, 0, 'text',
+                    lambda x, d, p: '_______________________,'),
+                ('Nama2', 7, 0, 'text',
+                    lambda x, d, p: 'Nama :               '),                             
+            
+   ]
+
+        row_hdr0 = self.xls_row_template(cols_specs, ['Title'])
+
+        row_first = self.xls_row_template(cols_specs, ['No','Titik2','Number'])
+        row_second = self.xls_row_template(cols_specs, ['Tanggal','Titik2','Date'])
+        row_third = self.xls_row_template(cols_specs,['Kosong'])
+        row_fourth = self.xls_row_template(cols_specs, ['TelahTerimadari'])
+        row_fifth = self.xls_row_template(cols_specs,['Nama','Name'])
+        row_sixth = self.xls_row_template(cols_specs,['UangSejumlah','Amount'])
+	row_seventh = self.xls_row_template(cols_specs,['Terbilang','State'])
+	row_eighth = self.xls_row_template(cols_specs,['Keterangan','Ket'])
+	row_ninth = self.xls_row_template(cols_specs,['Berupa','Dll'])
+        row_tenth = self.xls_row_template(cols_specs,[' ',' ',' ',' ','',' '])
+	row_eleventh = self.xls_row_template(cols_specs,['YangMenerima'])        
+        row_twelveth = self.xls_row_template(cols_specs,[' ',' ',' ',' ','',' '])
+        row_thirteenth = self.xls_row_template(cols_specs,[' ',' ',' ',' ','',' '])
+        row_fourteenth = self.xls_row_template(cols_specs,['Garis'])
+	row_fifteenth = self.xls_row_template(cols_specs,['Nama2'])
+
+        hdr_style = xlwt.easyxf('pattern: pattern solid, fore_color gray25;')
+        row_normal_style=  xlwt.easyxf(num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_style = xlwt.easyxf('font: bold on;',num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_top_style = xlwt.easyxf('font: bold on;borders: top thin ;',num_format_str='#,##0.00;(#,##0.00)')
+        row_bold_bottom_style = xlwt.easyxf('font: bold on;borders: bottom thin;',num_format_str='#,##0.00;(#,##0.00)')
+        
+        tittle_style = xlwt.easyxf('font: height 240, name Tahoma Black, colour_index black, bold on,underline on;align: wrap on, vert centre, horiz center; pattern: pattern solid, fore_color white;')
+        subtittle_left_style = xlwt.easyxf('font: name Tahoma, colour_index black, bold off; align: wrap on, vert centre, horiz right; pattern: pattern solid, fore_color white;')
+        subtittle_right_style = xlwt.easyxf('font: name Tahoma, colour_index brown, bold on, italic on; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        subtittle_top_and_bottom_style = xlwt.easyxf('font: height 240, name Tahoma, colour_index black, bold off, italic on; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        blank_style = xlwt.easyxf('font: height 650, name Tahoma, colour_index brown, bold off; align: wrap on, vert centre, horiz left; pattern: pattern solid, fore_color white;')
+        normal_style = xlwt.easyxf('font: height 100, name Tahoma, colour_index black, bold off; align: wrap on, vert centre, horiz left;')
+#        total_style = xlwt.easyxf('font: height 200, name Tahoma, colour_index black, bold off; align: wrap on, vert centre;pattern: pattern solid, fore_color gray25;', num_format_str='#,##0.00;(#,##0.00)')
+        total_style = xlwt.easyxf('font: height 200,  name Tahoma, colour_index black, bold off; align: wrap on, vert centre, horiz left;pattern: pattern solid, fore_color white;', num_format_str='#,##0.00;(#,##0.00)')
+#        total_style1 = xlwt.easyxf('font: height 200, name Tahoma, colour_index black, bold on, italic on; align: wrap on, vert centre, horiz center;;pattern: pattern solid, fore_color gray25;', num_format_str='#,##0.00;(#,##0.00)')
+        total_style1 = xlwt.easyxf('font: height 200, name Tahoma, colour_index black, bold off, italic on; align: wrap on, vert centre;pattern: pattern solid, fore_color white;', num_format_str='#,##0.00;(#,##0.00)')
+
+        ## Style variable End
+
+        # Write headers
+
+        self.xls_write_row(ws, None, data, parser, 0, row_hdr0, tittle_style)
+#        self.xls_write_row(ws, None, data, parser, 1, row_hdr1, subtittle_left_style)
+#        self.xls_write_row(ws, None, data, parser, 2, row_hdr2, subtittle_left_style)
+
+#        self.xls_write_row_header(ws, 1, row_first, subtittle_left_style, set_column_size=True)
+#        self.xls_write_row_header(ws, 2, row_second, subtittle_left_style, set_column_size=True)
+#        self.xls_write_row_header(ws, 3, row_third, subtittle_left_style, set_column_size=True)
+#        self.xls_write_row_header(ws, 3, row_fourth, total_style1, set_column_size=True)
+#	self.xls_write_row_header(ws, 4, row_second, total_style1, set_column_size=True)
+#       self.xls_write_row_header(ws, 5, row_third, total_style, set_column_size=True)
+#       self.xls_write_row_header(ws, 6, row_fourth, total_style, set_column_size=True)
+#       self.xls_write_row_header(ws, 7, row_fifth, total_style, set_column_size=True)
+#       self.xls_write_row_header(ws, 8, row_seventh, total_style, set_column_size=True)
+#       self.xls_write_row_header(ws, 9, row_eighth, total_style, set_column_size=True)
+#       self.xls_write_row_header(ws, 10,row_ninth, subtittle_left_style, set_column_size=True)
+#       self.xls_write_row_header(ws, 11,row_tenth, total_style1, set_column_size=True)
+#       self.xls_write_row_header(ws, 12,row_eleventh, subtittle_left_style, set_column_size=True)
+
+
+        row_count = 1
+        for dt in parser._get_data_all(data):
+            self.xls_write_row(ws, dt, data, parser, row_count, row_first, subtittle_left_style)
+    #        row_count+=1     
+        row_count+=1 
+        self.xls_write_row(ws, dt, data, parser, row_count, row_second, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_third, normal_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_fourth, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_fifth, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_sixth, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_seventh, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_eighth, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_ninth, total_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_tenth, normal_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_eleventh, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_twelveth, normal_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_thirteenth, normal_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_fourteenth, subtittle_left_style)
+        row_count+=1
+        self.xls_write_row(ws, dt, data, parser, row_count, row_fifteenth, subtittle_left_style)
+        pass
+#     print "asdaa"
+from netsvc import Service
+del Service._services['report.kwitansi.lap.xls']
+report_kwitansi_xls(
+        'report.kwitansi.lap.xls',
+        'lap.kwitansi',
+        'addons/ad_laporan_kwitansi/report/kwitansi_rep.mako',
+        parser=ReportKwitansi,
+        header=True)
+
+

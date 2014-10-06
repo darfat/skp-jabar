@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		
+		<record model="ir.ui.view" id="asdf_view_data_pegawai_filter_custom">
+			<field name="name">custom.data.pegawai.search</field>
+			<field name="model">res.partner</field>
+			<field name="type">search</field>
+			<field name="arch" type="xml">
+				<search string="Pencarian...">
+					<field name="name" string="Nama Pegawai"/>
+                    <field name="nip" string="NIP"/>
+                    <field name="company_id" string="OPD"/>
+                    <field name="department_id"   />
+					<field name="job_type"   />
+					<field name="eselon_id"  />
+					<field name="golongan_id"   />
+					<field name="job_id"   />
+					<field name="user_id_atasan" />
+					<field name="user_id_banding" />
+                    <group expand="0" string="Group By...">
+                        <filter string="Bidang" icon="terp-personal+" domain="[]" context="{'group_by':'department_id'}"/>
+                        <filter string="Eselon" icon="terp-personal+" domain="[]" context="{'group_by':'eselon_id'}"/>
+						<filter string="Tipe Jabatan" icon="terp-personal+" domain="[]" context="{'group_by':'job_type'}"/>
+						<filter string="Atasan Langsung" icon="terp-personal+" domain="[]" context="{'group_by':'user_id_atasan'}"/>
+						<filter string="Atasan Banding" icon="terp-personal+" domain="[]" context="{'group_by':'user_id_banding	'}"/>
+                        <filter string="OPD" icon="terp-go-home" domain="[]" context="{'group_by':'company_id'}" />
+                    </group>
+				</search>
+			</field>
+		</record>
+		
+
+		<record id="data_pegawai_tree_view" model="ir.ui.view">
+			<field name="name">partner.employee.tree</field>
+			<field name="model">res.partner</field>
+			<field eval="1" name="priority"/>
+			
+			<field name="arch" type="xml">
+				<tree string="Data Pegawai" colors="red:status_data_atasan_pegawai=='False';">
+					<field string="NIP" name="nip"/>					
+					<field string="Nama" name="name"/>
+					<field name="company_id" />
+					<field name="department_id"   />
+					<field name="job_type"   />
+					<field name="eselon_id"  />
+					<field name="golongan_id"   />
+					<field name="job_id"   />
+					<field name="user_id_atasan" invisible="True" />
+					<field name="user_id_banding"  invisible="True" />
+					<field name="status_data_atasan_pegawai" invisible="True" />
+				</tree>
+			</field>
+		</record>
+		
+		<record id="data_pegawai_form_view" model="ir.ui.view">
+			<field name="name">partner.employee.form</field>
+			<field name="model">res.partner</field>
+			<field eval="0" name="priority" />
+			<field name="arch" type="xml">
+				
+				<form string="Data Pegawai" version="7.0">
+					<header>
+						<button name="update_target_and_realisasi"  string="Set Ulang Data Atasan Pada Kegiatan" type="object"  groups="df_project.group_project_evaluated_bkd,base.group_no_one" />
+					</header>
+					<sheet>
+						<field name="image" widget='image' class="oe_left oe_avatar" options='{"preview_image": "image_medium", "size": [90, 90]}'/>
+						<div class="oe_title">
+							
+							<label for="name" class="oe_edit_only" />
+						    <h1>
+									<field name="name" default_focus="1" placeholder="Nama" />
+							</h1>
+						    
+							<label for="nip" class="oe_edit_only"/>
+						    <h2>
+								<field name="nip" placeholder="NIP" attrs="{'required': [('employee','=',True)]}" />
+							</h2>
+						    <label for="company_id" class="oe_edit_only" string="SKPD"/>
+						    <h3>
+								<field name="company_id"  attrs="{'required': [('employee','=',True)]}" />
+							</h3>
+						</div>
+						<group>
+							<group>
+									<field name="biro_id" />
+									<field name="department_id"  attrs="{'required': [('employee','=',True),('data_preparation','=',False)]}" />
+									<field name="job_type"  attrs="{'required': [('employee','=',True),('data_preparation','=',False)]}" />
+									<field name="eselon_id"  attrs="{'required': [('employee','=',True),('data_preparation','=',False)]}" />
+									<field name="golongan_id"  attrs="{'required': [('employee','=',True),('data_preparation','=',False)]}" />
+									<field name="job_id"  attrs="{'required': [('employee','=',True),('data_preparation','=',False)]}" />
+									<field name="masa_kerja"  />
+									<field name="diklat_kepemimpinan"  />
+									<field name="diklat_fungsional"  />	
+									
+							</group>
+							<group>
+								<field name="user_id_atasan"  attrs="{'required': [('employee','=',True),('is_head_of_all','=',False),('data_preparation','=',False)]}" on_change="onchange_atasan(user_id_atasan)" />
+								<field name="user_id_atasan_nip"   />
+								<field name="user_id_banding"  attrs="{'required': [('employee','=',True),('is_head_of_all','=',False),('data_preparation','=',False)]}" on_change="onchange_atasan_banding_nip(user_id_banding)" />
+								<field name="user_id_banding_nip"   />
+							
+							</group>
+						</group>	
+						
+						<notebook colspan="4">
+							<page string="Informasi Umum">
+								<group>
+									<group>
+										<field name="tempat_lahir"  />
+										<field name="tanggal_lahir"  />		
+										<field name="agama"  />
+										<field name="nama_sekolah"  />		
+										<field name="jurusan"  />		
+										<label for="street" string="Alamat"/>
+										<div>
+											<field name="street" placeholder="Alamat"/>
+											<div class="address_format">
+												<field name="city" placeholder="Kota" style="width: 40%%"/>
+												<field name="state_id" class="oe_no_button" placeholder="State" style="width: 37%%" options='{"no_open": True}' on_change="onchange_state(state_id)"/>
+												<field name="zip" placeholder="Kode Pos" style="width: 20%%"/>
+											</div>
+											<field name="country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True}' invisible="True"/>
+										</div>
+												
+									</group>
+									<group>
+										<field string="Telefon" name="phone"/>
+										<field string="HP" name="mobile"/>
+										<field string="Email" name="email"/>
+										<field name="gelar_depan"  />
+										<field name="gelar_blk"  />
+										<field name="employee" invisible="False"/>
+										<field name="is_head_of_all" groups="base.group_no_one" />
+										<field name="supplier" invisible="True"/>
+										<field name="customer" invisible="True"/>
+										<field name="is_company" invisible="True"/>
+										<field name="data_preparation" groups="base.group_no_one"/>
+										<field name="is_share_users" groups="base.group_no_one"/>
+									</group>
+								</group>	
+							</page>
+							
+							<page string="Keterangan">
+								<field name="comment" placeholder="Tambahakan Keterangan Tambahan..."/>
+							</page>							
+						</notebook>
+					</sheet>
+					<div class="oe_chatter"></div>
+				</form>
+			</field>
+		</record>
+		
+		<record model="ir.ui.view" id="data_pegawai_kanban_view">
+            <field name="name">partner.employee.kanban</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="name"/>
+                    <field name="nip"/>
+                    <field name="has_image"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_vignette oe_semantic_html_override">
+                                <a type="open">
+                                    
+                                    <t t-if="record.has_image.raw_value === true">
+                                        <img t-att-src="kanban_image('res.partner', 'image_small', record.id.value)" class="oe_kanban_image"/>
+                                    </t>
+                                    
+                                    <t t-if="record.has_image.raw_value === false">
+                                      	<img t-att-src='_s + "/base/static/src/img/avatar.png"' class="oe_kanban_image"/>
+                                    </t>
+                                </a>
+                                <div class="oe_kanban_details">
+                                    <h4 class="oe_partner_heading">
+                                       <a type="open"><field name="name"/></a>
+                                    </h4>
+	                                  
+                                    <ul>
+                                        <li t-if="record.nip.raw_value">NIP: <field name="nip"/></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        
+
+            
+		
+		
+		<record id="action_data_pegawai" model="ir.actions.act_window">
+			<field name="name">Pegawai</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">res.partner</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,kanban</field>
+			<field name="search_view_id" ref="asdf_view_data_pegawai_filter_custom"/>
+			<field name="domain">[('employee','=',True)]</field>
+			<field name="help" type="html">
+			<p class="oe_view_nocontent_create">
+			  Tekan untuk menambahkan data pegawai
+			</p>
+			</field>
+		</record>
+				
+		<record model="ir.actions.act_window.view" id="action_data_pegawai_tree_view">
+			<field eval="1" name="sequence"/>
+			<field name="view_mode">tree</field>
+			<field name="view_id" ref="data_pegawai_tree_view"/>
+			<field name="search_view_id" ref="asdf_view_data_pegawai_filter_custom"/>
+			<field name="act_window_id" ref="action_data_pegawai"/>
+		</record>
+		
+		<record model="ir.actions.act_window.view" id="action_data_pegawai_form_view">
+			<field eval="2" name="sequence"/>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="data_pegawai_form_view"/>
+			<field name="act_window_id" ref="action_data_pegawai"/>
+		</record>
+
+		<record model="ir.actions.act_window.view" id="action_data_pegawai_kanban_view">
+			<field eval="3" name="sequence"/>
+			<field name="view_mode">kanban</field>
+			<field name="view_id" ref="data_pegawai_kanban_view"/>
+			<field name="act_window_id" ref="action_data_pegawai"/>
+		</record>
+		
+		<menuitem id="menu_data_kepegawaian" name="Kepegawaian" sequence="2"  />
+		<menuitem id="menu_sub_data_kepegawaian" name="Data Pegawai" parent="menu_data_kepegawaian" sequence="1"/>
+		<menuitem id="menu_pegawai"  name="Pegawai" parent="menu_sub_data_kepegawaian" sequence="1" action="action_data_pegawai" />
+		
+		<menuitem id="menu_sub_konfigurasi_kepegawaian" name="Konfigurasi" parent="menu_data_kepegawaian" sequence="2"/>
+	</data>
+</openerp>
